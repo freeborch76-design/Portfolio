@@ -1,0 +1,3469 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Mon Portfolio</title>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Portfolio"/>
+  <meta name="theme-color" content="#0a0f1a"/>
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMGEwZjFhIi8+PHRleHQgeD0iOTAiIHk9IjExNSIgZm9udC1zaXplPSI5MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzA2YjZkNCI+8J+TiDwvdGV4dD48L3N2Zz4="/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'DM Sans', sans-serif; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
+    input, select, textarea, button { font-family: inherit; }
+    input[type="date"] { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; }
+    #root { min-height: 100%; position: relative; }
+
+    /* ── Safe area bottom padding on scroll container ── */
+    .main-scroll {
+      padding-bottom: calc(24px + env(safe-area-inset-bottom));
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+    }
+
+    /* ── Modal overlay : couvre tout l'écran y compris encoches ── */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,.55);
+      display: flex;
+      align-items: flex-end;
+      z-index: 200;
+    }
+
+    /* ── Feuille modale : colle au fond, pleine largeur ── */
+    .modal-sheet {
+      width: 100%;
+      max-height: 92dvh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 20px 20px 0 0;
+      box-sizing: border-box;
+      padding: 24px max(20px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+    }
+    .modal-sheet * { box-sizing: border-box; }
+
+    /* ── Liquid Glass CSS vars ── */
+    :root {
+      --glass-bg:       rgba(255,255,255,0.07);
+      --glass-bg-deep:  rgba(255,255,255,0.04);
+      --glass-border:   rgba(255,255,255,0.14);
+      --glass-shine:    rgba(255,255,255,0.18);
+      --glass-blur:     24px;
+      --glass-radius:   20px;
+      --glass-shadow:   0 8px 32px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.10) inset;
+      --accent:         #22d3ee;
+      --accent2:        #818cf8;
+    }
+
+    /* ── Animated background mesh ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 15% 20%, rgba(6,182,212,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 70% at 85% 75%, rgba(129,140,248,0.15) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 50% at 50% 50%, rgba(15,23,42,0.9) 0%, transparent 100%);
+      animation: meshFloat 18s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes meshFloat {
+      0%   { background-position: 0% 0%, 100% 100%, 50% 50%; }
+      100% { background-position: 10% 15%, 90% 85%, 48% 52%; }
+    }
+
+    /* ── Glass card utility ── */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--glass-radius);
+      box-shadow: var(--glass-shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .glass::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--glass-shine) 0%, transparent 50%);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    /* ── Glass button ── */
+    .glass-btn {
+      background: rgba(255,255,255,0.09);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all .2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .glass-btn::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .glass-btn:hover {
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,255,255,0.24);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+    .glass-btn:active { transform: translateY(0); }
+
+    /* ── Accent glass button ── */
+    .glass-btn-accent {
+      background: linear-gradient(135deg, rgba(34,211,238,0.25), rgba(14,165,233,0.2));
+      border-color: rgba(34,211,238,0.4);
+    }
+    .glass-btn-accent:hover {
+      background: linear-gradient(135deg, rgba(34,211,238,0.35), rgba(14,165,233,0.28));
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 3px; height: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+    /* ── Animations ── */
+    @keyframes spin    { to { transform: rotate(360deg); } }
+    @keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:.35} }
+    @keyframes fadeUp  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+    @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+    /* No transition flicker on initial load */
+    .glass, .glass-btn { transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .15s ease; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+
+// ── Constants ────────────────────────────────────────────────────────────────
+const CATEGORIES  = ["Actions","ETF","Crypto","Obligations","Livret","Autre"];
+const STORAGE_KEY  = "investments-data-v3";
+const ACCOUNTS_KEY = "accounts-data-v1";
+const HIST_KEY     = "hist-user-data-v1";
+const SYNC_KEY     = "portfolio-sync-v1";
+const CORS_PROXY   = "https://corsproxy.io/?";
+const ACCOUNT_COLORS = ["#06b6d4","#a78bfa","#34d399","#f472b6","#fbbf24","#38bdf8","#fb923c","#94a3b8","#f97316","#84cc16"];
+const HIDDEN      = "••••••";
+const CAT_COLORS  = { Actions:"#34d399", ETF:"#38bdf8", Crypto:"#a78bfa", Obligations:"#f472b6", Livret:"#fbbf24", Autre:"#94a3b8" };
+
+// ── Cloud sync — JSONbin.io ───────────────────────────────────────────────────
+const JBIN = "https://api.jsonbin.io/v3/b";
+
+async function cloudPush(apiKey, binId, payload) {
+  const url  = binId ? `${JBIN}/${binId}` : JBIN;
+  const hdrs = {"Content-Type":"application/json","X-Master-Key":apiKey,"X-Bin-Private":"true"};
+  if (!binId) hdrs["X-Bin-Name"] = "mon-portfolio";
+  const r = await fetch(url, {method:binId?"PUT":"POST", headers:hdrs, body:JSON.stringify(payload)});
+  if (!r.ok) throw new Error("HTTP "+r.status);
+  const j = await r.json();
+  return binId || j.metadata?.id;
+}
+
+async function cloudPull(apiKey, binId) {
+  const r = await fetch(`${JBIN}/${binId}/latest`, {headers:{"X-Master-Key":apiKey}});
+  if (!r.ok) throw new Error("HTTP "+r.status);
+  return (await r.json()).record;
+}
+
+// Découvre automatiquement le binId depuis l'apiKey seule (cherche "mon-portfolio")
+async function cloudDiscover(apiKey) {
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b', {
+      headers:{"X-Master-Key":apiKey},
+      signal: AbortSignal.timeout(8000)
+    });
+    if (!r.ok) return null;
+    const bins = await r.json();
+    if (!Array.isArray(bins)) return null;
+    const found = bins.find(b =>
+      (b.metadata?.name || b.snippetMeta?.name || b.record?.metadata?.name) === 'mon-portfolio'
+    );
+    return found?.metadata?.id || found?.snippetMeta?.id || found?.record?.metadata?.id || null;
+  } catch { return null; }
+}
+
+// ── Themes ───────────────────────────────────────────────────────────────────
+// ── Liquid Glass Themes ───────────────────────────────────────────────────────
+const DARK = {
+  bg:"linear-gradient(135deg,#060c18 0%,#0a0f1e 50%,#07111a 100%)",
+  bgSolid:"#07111a",
+  bgHeader:"rgba(6,9,20,0.72)",
+  bgCard:"rgba(255,255,255,0.07)",
+  bgDeep:"rgba(255,255,255,0.03)",
+  bgInput:"rgba(255,255,255,0.06)",
+  bgTabBar:"rgba(6,9,20,0.6)",
+  bgTabAct:"rgba(255,255,255,0.1)",
+  border:"rgba(255,255,255,0.13)",
+  borderSub:"rgba(255,255,255,0.07)",
+  text:"#f0f6ff", textSub:"#9ab0c8", textMuted:"#5a7490", textDim:"#4a6380", textFaint:"rgba(255,255,255,0.08)",
+  shadow:"0 8px 32px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.10) inset",
+  donutHole:"rgba(6,9,20,0.85)",
+  glass:true,
+};
+const BLACK = {
+  bg:"linear-gradient(135deg,#000000 0%,#050508 50%,#000000 100%)",
+  bgSolid:"#000000",
+  bgHeader:"rgba(0,0,0,0.75)",
+  bgCard:"rgba(255,255,255,0.055)",
+  bgDeep:"rgba(255,255,255,0.02)",
+  bgInput:"rgba(255,255,255,0.05)",
+  bgTabBar:"rgba(0,0,0,0.65)",
+  bgTabAct:"rgba(255,255,255,0.09)",
+  border:"rgba(255,255,255,0.10)",
+  borderSub:"rgba(255,255,255,0.05)",
+  text:"#f0f6ff", textSub:"#8a9eb5", textMuted:"#4a6070", textDim:"#3a5060", textFaint:"rgba(255,255,255,0.06)",
+  shadow:"0 8px 40px rgba(0,0,0,.7),0 1px 0 rgba(255,255,255,.08) inset",
+  donutHole:"rgba(0,0,0,0.9)",
+  glass:true,
+};
+const LIGHT = {
+  bg:"linear-gradient(135deg,#d8dce0 0%,#dde1e5 50%,#d4d8dc 100%)",
+  bgSolid:"#dde1e5",
+  bgHeader:"rgba(221,225,229,0.92)",
+  bgCard:"rgba(248,249,250,0.75)",
+  bgDeep:"rgba(200,205,210,0.5)",
+  bgInput:"rgba(248,249,250,0.7)",
+  bgTabBar:"rgba(195,200,206,0.6)",
+  bgTabAct:"rgba(248,249,250,0.9)",
+  border:"rgba(90,95,105,0.18)",
+  borderSub:"rgba(90,95,105,0.10)",
+  text:"#141820", textSub:"#32404e", textMuted:"#5a6470", textDim:"#808890", textFaint:"rgba(0,0,0,0.07)",
+  shadow:"0 6px 24px rgba(30,40,60,.14),0 1px 0 rgba(255,255,255,.5) inset",
+  donutHole:"rgba(221,225,229,0.92)",
+  glass:true,
+};
+const THEMES = ["dark", "black", "light"];
+
+// ── Indices historiques (47 points alignes mai-16 → sep-24) ──────────────────
+// Points alignes sur les dates de releve du portefeuille
+const INDICES = {
+  SP500: {
+    label:"S&P 500", color:"#06b6d4", ticker:"^GSPC",
+    data:[2096,2789,3278,3208,3391,3419,4141,4141,4141,4141,4168,4238,4454,4446,4667,4667,4675,4574,4040,4158,4158,3912,3961,3961,4080,4080,3969,4121,4146,4345,4508,4508,4426,4426,4685,4804,4804,5012,5012,5012,5095,5235,5235,5415,5543,5502,5626],
+  },
+  NDX: {
+    label:"Nasdaq 100", color:"#a78bfa", ticker:"^NDX",
+    data:[4336,5910,7281,7302,7974,8292,13415,13415,13415,13415,13390,14504,15182,14763,15813,15813,16320,14936,11472,12647,12647,10871,11148,11148,12107,12107,11720,13048,13100,14175,15320,15320,14862,14862,16825,16832,16832,17594,17594,17594,17718,18009,18009,19156,19802,19570,19700],
+  },
+  CAC40: {
+    label:"CAC 40", color:"#f472b6", ticker:"^FCHI",
+    data:[4398,5321,5520,4960,5090,5215,6276,6276,6276,6276,6421,6623,6688,6519,6765,6765,7153,6998,6258,6363,6363,6474,6837,6837,7086,7086,7115,7491,7491,7316,7409,7409,7216,7216,7543,7606,7606,7699,7699,7699,8024,8083,8083,7947,8218,7580,7577],
+  },
+  GOLD: {
+    label:"Or (XAU/USD)", color:"#fbbf24", ticker:"GC=F",
+    data:[1270,1330,1580,1800,1970,1900,1770,1770,1770,1770,1900,1780,1800,1755,1790,1790,1800,1800,1840,1740,1740,1810,1920,1920,1840,1840,1970,2000,1960,1920,1960,1960,1920,1920,2060,2040,2040,2040,2040,2040,2340,2330,2330,2320,2440,2500,2620],
+  },
+};
+
+const HIST_LABELS = ["mai-16","jan-18","fev-20","jul-20","aou-20","oct-20","avr-21","avr-21","avr-21","avr-21","mai-21","jun-21","aou-21","sep-21","nov-21","nov-21","dec-21","jan-22","mai-22","aou-22","aou-22","dec-22","jan-23","jan-23","fev-23","fev-23","mar-23","avr-23","mai-23","jun-23","jul-23","jul-23","aou-23","aou-23","dec-23","jan-24","jan-24","fev-24","fev-24","fev-24","avr-24","mai-24","mai-24","jun-24","jul-24","aou-24","sep-24"];
+
+// Dates réelles correspondantes (pour filtrage par intervalle)
+const HIST_DATES = [
+  new Date(2016,4),new Date(2018,0),new Date(2020,1),new Date(2020,6),new Date(2020,7),new Date(2020,9),
+  new Date(2021,3),new Date(2021,3),new Date(2021,3),new Date(2021,3),new Date(2021,4),new Date(2021,5),
+  new Date(2021,7),new Date(2021,8),new Date(2021,10),new Date(2021,10),new Date(2021,11),new Date(2022,0),
+  new Date(2022,4),new Date(2022,7),new Date(2022,7),new Date(2022,11),new Date(2023,0),new Date(2023,0),
+  new Date(2023,1),new Date(2023,1),new Date(2023,2),new Date(2023,3),new Date(2023,4),new Date(2023,5),
+  new Date(2023,6),new Date(2023,6),new Date(2023,7),new Date(2023,7),new Date(2023,11),new Date(2024,0),
+  new Date(2024,0),new Date(2024,1),new Date(2024,1),new Date(2024,1),new Date(2024,3),new Date(2024,4),
+  new Date(2024,4),new Date(2024,5),new Date(2024,6),new Date(2024,7),new Date(2024,8),
+];
+
+// Intervalles disponibles avec leur durée en mois (null = tout)
+const INTERVALS = [
+  { key:"1M",  label:"1M",   months:1   },
+  { key:"3M",  label:"3M",   months:3   },
+  { key:"6M",  label:"6M",   months:6   },
+  { key:"YTD", label:"YTD",  months:null, ytd:true },
+  { key:"1A",  label:"1A",   months:12  },
+  { key:"2A",  label:"2A",   months:24  },
+  { key:"5A",  label:"5A",   months:60  },
+  { key:"10A", label:"10A",  months:120 },
+  { key:"MAX", label:"Max",  months:null },
+];
+
+function sliceByInterval(vals, intervalKey) {
+  const n = vals.length;
+  if (!n) return { vals, startIdx:0 };
+  const iv = INTERVALS.find(i => i.key === intervalKey);
+  if (!iv || iv.key === "MAX") return { vals, startIdx:0 };
+
+  const today = new Date();
+  let cutDate;
+  if (iv.ytd) {
+    cutDate = new Date(today.getFullYear(), 0, 1);
+  } else {
+    cutDate = new Date(today);
+    cutDate.setMonth(cutDate.getMonth() - iv.months);
+  }
+
+  // Trouver le premier index >= cutDate
+  let startIdx = 0;
+  for (let i = 0; i < n; i++) {
+    const d = HIST_DATES[Math.min(i, HIST_DATES.length-1)];
+    if (d >= cutDate) { startIdx = i; break; }
+    startIdx = n - 1;
+  }
+  // Garantir au moins 2 points
+  if (n - startIdx < 2) startIdx = Math.max(0, n - 2);
+  return { vals: vals.slice(startIdx), startIdx };
+}
+const YEAR_MARKS  = [{yr:"2016",i:0},{yr:"2018",i:1},{yr:"2020",i:2},{yr:"2021",i:5},{yr:"2022",i:17},{yr:"2023",i:22},{yr:"2024",i:34}];
+
+// Slicing sur un tableau de dates réelles (pas HIST_DATES)
+function sliceByRealDates(dates, vals, intervalKey) {
+  const n = vals.length;
+  if (n < 2) return { vals, dates, startIdx: 0 };
+  const iv = INTERVALS.find(i => i.key === intervalKey);
+  if (!iv || iv.key === "MAX") return { vals, dates, startIdx: 0 };
+  const today = new Date();
+  let cutDate;
+  if (iv.ytd) {
+    cutDate = new Date(today.getFullYear(), 0, 1);
+  } else {
+    cutDate = new Date(today);
+    cutDate.setMonth(cutDate.getMonth() - iv.months);
+  }
+  let startIdx = 0;
+  for (let i = 0; i < n; i++) {
+    if (dates[i] >= cutDate) { startIdx = i; break; }
+    if (i === n - 1) startIdx = Math.max(0, n - 2);
+  }
+  if (n - startIdx < 2) startIdx = Math.max(0, n - 2);
+  return { vals: vals.slice(startIdx), dates: dates.slice(startIdx), startIdx };
+}
+
+// ── Portfolio data ────────────────────────────────────────────────────────────
+const HISTORY = {};
+
+const PRELOADED = [];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const fmtEur  = (v) => new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);
+const fmtDate = (d) => new Intl.DateTimeFormat("fr-FR").format(new Date(d));
+const pct     = (a,b) => b===0 ? 0 : ((a-b)/b)*100;
+const slug    = (s) => s.replace(/[^a-zA-Z0-9]/g,"");
+
+// ── Fetch prix ────────────────────────────────────────────────────────────────
+//
+// Sources : CoinGecko (crypto), Stooq, Twelve Data, FMP, Euronext, Boursorama, Yahoo
+// Architecture : course parallèle — 1er résultat valide retenu
+
+const TWELVE_KEY = "cc96508de65d4329a994058277f88cfa";
+const FMP_KEY    = "AlklhOYJOHGeirmNN3ypLY7suvDbEPZu";
+
+const COINGECKO_IDS = {
+  "BTC-EUR":"bitcoin",    "BTC-USD":"bitcoin",
+  "ETH-EUR":"ethereum",   "ETH-USD":"ethereum",
+  "SOL-EUR":"solana",     "SOL-USD":"solana",
+  "BNB-EUR":"binancecoin","BNB-USD":"binancecoin",
+  "XRP-EUR":"ripple",     "XRP-USD":"ripple",
+  "ADA-EUR":"cardano",    "DOGE-EUR":"dogecoin",
+  "MATIC-EUR":"matic-network","DOT-EUR":"polkadot",
+  "LINK-EUR":"chainlink", "AVAX-EUR":"avalanche-2",
+};
+
+function isCrypto(t) { return !!COINGECKO_IDS[t.trim().toUpperCase()]; }
+
+// ── Sources individuelles ─────────────────────────────────────────────────────
+
+// CoinGecko — crypto seulement
+async function src_coingecko(ticker) {
+  const t  = ticker.trim().toUpperCase();
+  const id = COINGECKO_IDS[t];
+  if (!id) return null;
+  const cur = t.endsWith("-USD") ? "usd" : "eur";
+  try {
+    const res  = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=${cur}`,
+      { signal: AbortSignal.timeout(7000) }
+    );
+    const data = await res.json();
+    const p    = data?.[id]?.[cur];
+    return p > 0 ? p : null;
+  } catch { return null; }
+}
+
+// Stooq CSV — tous les marchés (US, EU, FR, indices)
+// Format ticker Stooq = ticker Yahoo en minuscules, ex: cw8.pa, aapl, ^gspc → %5egspc
+async function src_stooq(ticker) {
+  // Essayer plusieurs formats Stooq (certains ETF utilisent .fr au lieu de .pa)
+  const variants = [];
+  const t = ticker.trim().toLowerCase().replace("^","%5e");
+  variants.push(t);
+  // Si .pa → essayer aussi sans suffixe et avec .fr
+  if (t.endsWith(".pa")) {
+    variants.push(t.replace(".pa", ".fr"));
+    variants.push(t.replace(".pa", ""));
+  }
+  for (const s of variants) {
+    try {
+      const res = await fetch(
+        `https://stooq.com/q/l/?s=${s}&f=sd2t2ohlcv&h&e=csv`,
+        { signal: AbortSignal.timeout(7000) }
+      );
+      if (!res.ok) continue;
+      const csv  = await res.text();
+      const rows = csv.trim().split("\n");
+      if (rows.length < 2) continue;
+      const cols = rows[1].split(",");
+      const p = parseFloat(cols[6]);
+      if (p > 0 && !isNaN(p)) return p;
+    } catch { continue; }
+  }
+  return null;
+}
+
+// Source : API publique Euronext Live (par ISIN + MIC)
+// Utilisée par le site live.euronext.com lui-même — pas d'auth requise
+const EURONEXT_ISIN = {
+  "CL2.PA":   "FR0010755611-XPAR",
+  "LQQ.PA":   "FR0010342253-XPAR",
+  "CW8.PA":   "LU1681043599-XPAR",
+  "ESE.PA":   "FR0011550185-XPAR",
+  "UST.PA":   "FR0010655431-XPAR",
+  "PUST.PA":  "LU1681038672-XPAR",
+  "500.PA":   "LU1681048804-XPAR",
+  "EWLD.PA":  "LU1681038243-XPAR",
+  "NASD.PA":  "FR0010342253-XPAR",
+  "RS2K.PA":  "LU1681038599-XPAR",
+  "PAASI.PA": "LU1681038755-XPAR",
+  "JPNH.PA":  "LU1681038912-XPAR",
+  "EAU.PA":   "FR0010527275-XPAR",
+  "PANX.PA":  "LU1681038243-XPAR",
+  "MSE.PA":   "FR0010296061-XPAR",
+  "C40.PA":   "FR0007052782-XPAR",
+  "SXRT.PA":  "LU1681039639-XPAR",
+  "MEUD.PA":  "LU1829221024-XPAR",
+  "MMS.PA":   "LU1681041830-XPAR",
+  "AEEM.PA":  "LU1681045370-XPAR",
+};
+
+async function src_euronext(ticker) {
+  const key = ticker.trim().toUpperCase();
+  const isinMic = EURONEXT_ISIN[key];
+  if (!isinMic) return null;
+  try {
+    const res = await fetch(
+      `https://live.euronext.com/en/ajax/getHeaderQuote/${isinMic}/header`,
+      { signal: AbortSignal.timeout(7000) }
+    );
+    if (!res.ok) return null;
+    const text = await res.text();
+    // Réponse HTML — extraire le prix avec regex
+    const match = text.match(/class="[^"]*last[^"]*"[^>]*>\s*([\d\s,\.]+)/i)
+      || text.match(/"lastPrice"\s*:\s*([\d\.]+)/)
+      || text.match(/([\d]+[,\.][\d]+)\s*EUR/);
+    if (!match) return null;
+    const p = parseFloat(match[1].replace(/\s/g,"").replace(",","."));
+    return p > 0 ? p : null;
+  } catch { return null; }
+}
+
+// Source alternative Euronext — endpoint intraday chart
+async function src_euronext_chart(ticker) {
+  const key = ticker.trim().toUpperCase();
+  const isinMic = EURONEXT_ISIN[key];
+  if (!isinMic) return null;
+  try {
+    const [isin, mic] = isinMic.split("-");
+    const res = await fetch(
+      `https://live.euronext.com/intraday_chart/getChartData/${isinMic}/intraday`,
+      { signal: AbortSignal.timeout(7000) }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    // Retourne [{time, price}, ...] — prendre le dernier
+    if (!Array.isArray(data) || !data.length) return null;
+    const last = data[data.length - 1];
+    const p = parseFloat(last?.price || last?.c || last?.[1]);
+    return p > 0 ? p : null;
+  } catch { return null; }
+}
+// Symbole Boursorama = "1rP" + ticker sans suffixe .PA
+const BOURSORAMA_MAP = {
+  "CL2.PA":  "1rPCL2",
+  "LQQ.PA":  "1rPLQQ",
+  "CW8.PA":  "1rPCW8",
+  "ESE.PA":  "1rPESE",
+  "PUST.PA": "1rPPUST",
+  "UST.PA":  "1rPUST",
+  "500.PA":  "1rP500",
+  "EWLD.PA": "1rPEWLD",
+  "MSE.PA":  "1rPMSE",
+  "NASD.PA": "1rPNASD",
+  "RS2K.PA": "1rPRS2K",
+  "EAU.PA":  "1rPEAU",
+  "PAASI.PA":"1rPPAASI",
+  "JPNH.PA": "1rPJPNH",
+};
+
+async function src_boursorama(ticker) {
+  const sym = BOURSORAMA_MAP[ticker.trim().toUpperCase()];
+  if (!sym) return null;
+  try {
+    const res = await fetch(
+      `https://www.boursorama.com/bourse/action/graph/ws/GetTicksEOD?symbol=${sym}&length=5&period=0&guid=`,
+      { signal: AbortSignal.timeout(7000) }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const ticks = data?.d?.qd;
+    if (!ticks || !ticks.length) return null;
+    const last = ticks[ticks.length - 1];
+    const p = parseFloat(last?.c || last?.l);
+    return p > 0 ? p : null;
+  } catch { return null; }
+}
+
+// ── Détection ISIN (12 chars : 2 lettres + 10 alphanum) ──────────────────────
+function isISIN(t) {
+  return /^[A-Z]{2}[A-Z0-9]{10}$/i.test(t.trim());
+}
+
+// Source ISIN via Boursorama — VL fonds non cotés (OPCVM, FCPI, etc.)
+// Boursorama utilise le préfixe "0P" + code interne, ou directement l'ISIN
+// On passe par leur endpoint de cotation OPCVM
+async function src_boursorama_isin(ticker) {
+  const t = ticker.trim().toUpperCase();
+  if (!isISIN(t)) return null;
+  // Format Boursorama pour OPCVM : "0P" prefix via leur API de recherche
+  try {
+    // 1. Chercher le symbole Boursorama à partir de l'ISIN
+    const searchRes = await fetch(
+      `${CORS_PROXY}https://www.boursorama.com/recherche/ajax?query=${t}&limit=5`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    if (!searchRes.ok) throw new Error("search failed");
+    const searchData = await searchRes.json();
+    const items = searchData?.items || searchData?.data || searchData || [];
+    const found = Array.isArray(items) ? items.find(i =>
+      i.isin === t || i.symbol?.includes(t) || i.ticker === t
+    ) : null;
+    const sym = found?.symbol || found?.ticker;
+    if (!sym) throw new Error("symbol not found");
+
+    // 2. Récupérer la VL avec le symbole trouvé
+    const quotRes = await fetch(
+      `${CORS_PROXY}https://www.boursorama.com/bourse/action/graph/ws/GetTicksEOD?symbol=${sym}&length=5&period=0&guid=`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    if (!quotRes.ok) throw new Error("quote failed");
+    const qData = await quotRes.json();
+    const ticks = qData?.d?.qd;
+    if (!ticks?.length) throw new Error("no ticks");
+    const p = parseFloat(ticks[ticks.length-1]?.c || ticks[ticks.length-1]?.l);
+    if (p > 0) return p;
+    throw new Error("invalid price");
+  } catch {}
+
+  // Fallback : endpoint direct ISIN Boursorama OPCVM
+  try {
+    const res = await fetch(
+      `${CORS_PROXY}https://www.boursorama.com/cours/${t}/`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    if (!res.ok) return null;
+    const html = await res.text();
+    // Chercher la VL dans le HTML — format : "123,45 EUR" ou data-last="123.45"
+    const m = html.match(/data-last="([\d\.]+)"/)
+      || html.match(/class="[^"]*c-instrument__value[^"]*"[^>]*>([\d\s,\.]+)/)
+      || html.match(/"lastPrice"\s*:\s*([\d\.]+)/)
+      || html.match(/Valeur\s+liquidative[^>]*>[^<]*([\d\s,\.]+)/i);
+    if (!m) return null;
+    const p = parseFloat(m[1].replace(/\s/g,"").replace(",","."));
+    return p > 0 ? p : null;
+  } catch { return null; }
+}
+async function src_twelve(ticker) {
+  const t = ticker.trim();
+  if (isCrypto(t)) return null; // CoinGecko s'en charge
+  try {
+    const res  = await fetch(
+      `https://api.twelvedata.com/price?symbol=${encodeURIComponent(t)}&apikey=${TWELVE_KEY}`,
+      { signal: AbortSignal.timeout(7000) }
+    );
+    const data = await res.json();
+    const p    = parseFloat(data?.price);
+    return (p > 0 && !data?.code) ? p : null;
+  } catch { return null; }
+}
+
+// FMP — actions mondiales, ETF, indices
+async function src_fmp(ticker) {
+  const t = ticker.trim();
+  try {
+    const res  = await fetch(
+      `https://financialmodelingprep.com/api/v3/quote-short/${encodeURIComponent(t)}?apikey=${FMP_KEY}`,
+      { signal: AbortSignal.timeout(7000) }
+    );
+    const data = await res.json();
+    const p    = parseFloat(data?.[0]?.price);
+    return p > 0 ? p : null;
+  } catch { return null; }
+}
+
+// Yahoo Finance via proxies CORS
+async function src_yahoo(ticker) {
+  const t    = ticker.trim();
+  const base = `https://query1.finance.yahoo.com/v8/finance/chart/${t}?interval=1d&range=1d`;
+  const urls = [
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(base)}`,
+    `https://corsproxy.io/?${encodeURIComponent(base)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(base)}`,
+  ];
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const p    = parseFloat(data?.chart?.result?.[0]?.meta?.regularMarketPrice);
+      if (p > 0) return p;
+    } catch { continue; }
+  }
+  return null;
+}
+
+// ── Course parallèle — prend le 1er résultat valide ──────────────────────────
+async function fetchPriceRace(ticker) {
+  const t = ticker.trim();
+  if (!t) return null;
+
+  // Sélectionner les sources à lancer selon le type de ticker
+  const isEU = /\.(PA|AS|DE|L|MI|BR|MC|HE|ST|CO|OL|AX|HK|T)$/i.test(t) || t.startsWith("^");
+  const sources = isCrypto(t)
+    ? [src_coingecko(t)]
+    : isISIN(t)
+      ? [src_boursorama_isin(t), src_stooq(t), src_fmp(t)]
+      : isEU
+        ? [src_euronext_chart(t), src_euronext(t), src_stooq(t), src_boursorama(t), src_fmp(t), src_twelve(t), src_yahoo(t)]
+        : [src_twelve(t), src_fmp(t), src_stooq(t), src_yahoo(t)];
+
+  return new Promise((resolve) => {
+    let done = false;
+    let pending = sources.length;
+
+    sources.forEach(promise => {
+      promise.then(price => {
+        pending--;
+        if (!done && price && price > 0) {
+          done = true;
+          resolve(price);
+        } else if (!done && pending === 0) {
+          resolve(null);
+        }
+      }).catch(() => {
+        pending--;
+        if (!done && pending === 0) resolve(null);
+      });
+    });
+  });
+}
+
+// Batch CoinGecko (plus efficace pour les cryptos)
+async function fetchCoinGeckoBatch(invList) {
+  const results = {};
+  const ids = [...new Set(invList.map(i => COINGECKO_IDS[i.ticker.trim().toUpperCase()]).filter(Boolean))];
+  if (!ids.length) return results;
+  try {
+    const res  = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(",")}&vs_currencies=eur,usd`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    const data = await res.json();
+    for (const inv of invList) {
+      const t   = inv.ticker.trim().toUpperCase();
+      const id  = COINGECKO_IDS[t];
+      const cur = t.endsWith("-USD") ? "usd" : "eur";
+      const p   = data?.[id]?.[cur];
+      results[inv.id] = p > 0 ? { price: p, ok: true } : { ok: false };
+    }
+  } catch { invList.forEach(inv => { results[inv.id] = { ok: false }; }); }
+  return results;
+}
+
+// ── Dispatcher principal ──────────────────────────────────────────────────────
+async function fetchAllPrices(toUpdate, onProgress) {
+  const results = {};
+  if (!toUpdate.length) return results;
+  toUpdate.forEach(inv => onProgress(inv.id, "loading"));
+
+  // Cryptos en batch CoinGecko (plus efficace)
+  const cryptoList = toUpdate.filter(i => isCrypto(i.ticker));
+  if (cryptoList.length) {
+    const r = await fetchCoinGeckoBatch(cryptoList);
+    for (const inv of cryptoList) {
+      results[inv.id] = r[inv.id] || { ok: false };
+      onProgress(inv.id, r[inv.id]?.ok ? "ok" : "error");
+    }
+  }
+
+  // Tous les autres : course parallèle par batch de 5
+  const otherList = toUpdate.filter(i => !isCrypto(i.ticker));
+  for (let i = 0; i < otherList.length; i += 5) {
+    await Promise.all(otherList.slice(i, i+5).map(async inv => {
+      const p = await fetchPriceRace(inv.ticker);
+      results[inv.id] = p ? { price: p, ok: true } : { ok: false };
+      onProgress(inv.id, p ? "ok" : "error");
+    }));
+    // Petite pause entre les batchs pour éviter le rate limiting
+    if (i + 5 < otherList.length) await new Promise(r => setTimeout(r, 200));
+  }
+
+  return results;
+}
+
+// Fonction unitaire (formulaire)
+async function fetchPrice(ticker) {
+  if (!ticker?.trim()) return null;
+  const p = isCrypto(ticker.trim())
+    ? (await fetchCoinGeckoBatch([{id:0,ticker:ticker.trim()}]))[0]?.price
+    : await fetchPriceRace(ticker.trim());
+  return p ? { price: p } : null;
+}
+
+
+// ── Palette pour la vue détaillée (couleurs distinctes par actif) ─────────────
+const ASSET_PALETTE = [
+  "#06b6d4","#38bdf8","#a78bfa","#34d399","#f472b6","#fbbf24","#fb923c","#f87171",
+  "#4ade80","#60a5fa","#e879f9","#facc15","#2dd4bf","#818cf8","#f97316","#84cc16",
+  "#22d3ee","#c084fc","#86efac","#fca5a5","#67e8f9","#d8b4fe","#6ee7b7","#fde68a",
+];
+
+// ── DonutChart ────────────────────────────────────────────────────────────────
+function DonutChart({ data, T }) {
+  const total = data.reduce((s,d)=>s+d.value,0);
+  if (!total) return null;
+  let cum = 0;
+  const toXY = (p) => { const a=p*2*Math.PI-Math.PI/2; return [50+40*Math.cos(a),50+40*Math.sin(a)]; };
+  return (
+    <svg viewBox="0 0 100 100" style={{width:130,height:130,flexShrink:0}}>
+      {data.map(d=>{
+        const start=cum; cum+=d.value/total;
+        const [x1,y1]=toXY(start),[x2,y2]=toXY(cum);
+        return <path key={d.label} d={"M50,50 L"+x1+","+y1+" A40,40 0 "+(cum-start>0.5?1:0)+",1 "+x2+","+y2+" Z"} fill={d.color} opacity={0.9}/>;
+      })}
+      <circle cx="50" cy="50" r="22" fill={T.donutHole}/>
+      <text x="50" y="49" textAnchor="middle" fill={T.textDim} fontSize="5.5">{data.length}</text>
+      <text x="50" y="55" textAnchor="middle" fill={T.textDim} fontSize="4.5">actifs</text>
+    </svg>
+  );
+}
+
+// ── Sparkline ─────────────────────────────────────────────────────────────────
+function Sparkline({ values }) {
+  if (!values||values.length<2) return <span style={{color:"#475569"}}>-</span>;
+  const mn=Math.min(...values),mx=Math.max(...values),rng=mx-mn||1;
+  const pts=values.map((v,i)=>((i/(values.length-1))*60)+","+(16-((v-mn)/rng)*14)).join(" ");
+  const col=values[values.length-1]>=values[0]?"#34d399":"#f87171";
+  return <svg viewBox="0 0 60 18" style={{width:60,height:18}}><polyline points={pts} fill="none" stroke={col} strokeWidth="1.8" strokeLinejoin="round"/></svg>;
+}
+
+// ── Multi-index comparison chart ──────────────────────────────────────────────
+function ComparisonChart({ id, assetVals, activeIndices, startIdx, T }) {
+  const W=700, H=120, P=6;
+  const n = assetVals.length;
+  if (n<2) return null;
+  const si = startIdx || 0;
+
+  const aN = assetVals.map(v=>(v/assetVals[0])*100);
+
+  // Normalized index series — slicées à partir du même startIdx
+  const indexSeries = Object.entries(INDICES)
+    .filter(([k]) => activeIndices.includes(k))
+    .map(([k,idx]) => {
+      const sliced = idx.data.slice(si, si + n);
+      if (!sliced.length || !sliced[0]) return null;
+      return {
+        key:k, label:idx.label, color:idx.color,
+        norm: sliced.map(v=>(v/sliced[0])*100),
+      };
+    }).filter(Boolean);
+
+  const allVals = [...aN, ...indexSeries.flatMap(s=>s.norm)];
+  const mn=Math.min(...allVals)-2, mx=Math.max(...allVals)+2, rng=mx-mn||1;
+  const cx=(i)=>P+(i/(n-1))*(W-P*2);
+  const cy=(v)=>H-P-((v-mn)/rng)*(H-P*2);
+  const aPts=aN.map((v,i)=>cx(i)+","+cy(v)).join(" ");
+  const aFinal=aN[n-1];
+  const aColor=aFinal>=100?"#34d399":"#f87171";
+  const gid="g"+slug(id);
+
+  return (
+    <div>
+      {/* Legend */}
+      <div style={{display:"flex",gap:14,marginBottom:8,flexWrap:"wrap",alignItems:"center"}}>
+        <div style={{display:"flex",alignItems:"center",gap:5}}>
+          <svg width="18" height="4"><line x1="0" y1="2" x2="18" y2="2" stroke={aColor} strokeWidth="2.5"/></svg>
+          <span style={{fontSize:12,color:aColor,fontWeight:700}}>{aFinal>=100?"+":""}{(aFinal-100).toFixed(1)}% votre actif</span>
+        </div>
+        {indexSeries.map(s=>(
+          <div key={s.key} style={{display:"flex",alignItems:"center",gap:5}}>
+            <svg width="18" height="4"><line x1="0" y1="2" x2="18" y2="2" stroke={s.color} strokeWidth="2" strokeDasharray="4,3"/></svg>
+            <span style={{fontSize:12,color:s.color,fontWeight:600}}>{s.label} {s.norm[n-1]>=100?"+":""}{(s.norm[n-1]-100).toFixed(1)}%</span>
+          </div>
+        ))}
+        <span style={{fontSize:11,color:T.textMuted,marginLeft:"auto"}}>base 100</span>
+      </div>
+
+      <svg viewBox={"0 0 "+W+" "+H} style={{width:"100%",height:110,display:"block"}}>
+        <defs>
+          <linearGradient id={gid} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor={aColor} stopOpacity={0.15}/>
+            <stop offset="100%" stopColor={aColor} stopOpacity={0}/>
+          </linearGradient>
+        </defs>
+        <line x1={P} y1={cy(100)} x2={W-P} y2={cy(100)} stroke={T.border} strokeWidth="1" strokeDasharray="3,3"/>
+        {YEAR_MARKS.filter(m=>m.i<n).map(({yr,i})=>(
+          <g key={yr}>
+            <line x1={cx(i)} y1={P} x2={cx(i)} y2={H-P} stroke={T.border} strokeWidth="1" strokeDasharray="2,4"/>
+            <text x={cx(i)} y={H-1} textAnchor="middle" fill={T.textFaint} fontSize="7">{yr}</text>
+          </g>
+        ))}
+        <polygon points={cx(0)+","+(H-P)+" "+aPts+" "+cx(n-1)+","+(H-P)} fill={"url(#"+gid+")"}/>
+        {indexSeries.map(s=>(
+          <polyline key={s.key} points={s.norm.map((v,i)=>cx(i)+","+cy(v)).join(" ")} fill="none" stroke={s.color} strokeWidth="1.8" strokeDasharray="5,3" strokeLinejoin="round" opacity={0.85}/>
+        ))}
+        <polyline points={aPts} fill="none" stroke={aColor} strokeWidth="2.2" strokeLinejoin="round"/>
+        <circle cx={cx(n-1)} cy={cy(aFinal)} r="3.5" fill={aColor}/>
+        {indexSeries.map(s=>(
+          <circle key={s.key} cx={cx(n-1)} cy={cy(s.norm[n-1])} r="3" fill={s.color}/>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+// ── Comparison chart avec dates réelles (pour actifs avec points custom) ──────
+function ComparisonChartDates({ id, assetDates, assetVals, activeIndices, T }) {
+  const W=700, H=120, P=6;
+  const n = assetVals.length;
+  if (n < 2) return null;
+  const aN = assetVals.map(v => (v / assetVals[0]) * 100);
+  // Pour chaque date de l'actif, trouver la valeur d'indice la plus proche dans HIST_DATES
+  const nearestHistVal = (idxData, date) => {
+    let best=0, bestDiff=Infinity;
+    for (let i=0; i<HIST_DATES.length; i++) {
+      const diff = Math.abs(HIST_DATES[i]-date);
+      if (diff<bestDiff) { bestDiff=diff; best=i; }
+    }
+    return idxData[best];
+  };
+  const indexSeries = Object.entries(INDICES)
+    .filter(([k]) => activeIndices.includes(k))
+    .map(([k, idx]) => {
+      const vals = assetDates.map(d => nearestHistVal(idx.data, d));
+      if (!vals[0]) return null;
+      return { key:k, label:idx.label, color:idx.color, norm:vals.map(v=>(v/vals[0])*100) };
+    }).filter(Boolean);
+  const allVals = [...aN, ...indexSeries.flatMap(s=>s.norm)];
+  const mn=Math.min(...allVals)-2, mx=Math.max(...allVals)+2, rng=mx-mn||1;
+  const cx=(i)=>P+(i/(n-1))*(W-P*2);
+  const cy=(v)=>H-P-((v-mn)/rng)*(H-P*2);
+  const aPts=aN.map((v,i)=>cx(i)+","+cy(v)).join(" ");
+  const aFinal=aN[n-1];
+  const aColor=aFinal>=100?"#34d399":"#f87171";
+  const gid="gd"+slug(id);
+  // Marques d'années dynamiques
+  const yearMarks=[];
+  let lastYr=-1;
+  assetDates.forEach((d,i)=>{ const yr=d.getFullYear(); if(yr!==lastYr){yearMarks.push({yr,i});lastYr=yr;} });
+  return (
+    <div>
+      <div style={{display:"flex",gap:14,marginBottom:8,flexWrap:"wrap",alignItems:"center"}}>
+        <div style={{display:"flex",alignItems:"center",gap:5}}>
+          <svg width="18" height="4"><line x1="0" y1="2" x2="18" y2="2" stroke={aColor} strokeWidth="2.5"/></svg>
+          <span style={{fontSize:12,color:aColor,fontWeight:700}}>{aFinal>=100?"+":""}{(aFinal-100).toFixed(1)}% votre actif</span>
+        </div>
+        {indexSeries.map(s=>(
+          <div key={s.key} style={{display:"flex",alignItems:"center",gap:5}}>
+            <svg width="18" height="4"><line x1="0" y1="2" x2="18" y2="2" stroke={s.color} strokeWidth="2" strokeDasharray="4,3"/></svg>
+            <span style={{fontSize:12,color:s.color,fontWeight:600}}>{s.label} {s.norm[n-1]>=100?"+":""}{(s.norm[n-1]-100).toFixed(1)}%</span>
+          </div>
+        ))}
+        <span style={{fontSize:11,color:T.textMuted,marginLeft:"auto"}}>base 100</span>
+      </div>
+      <svg viewBox={"0 0 "+W+" "+H} style={{width:"100%",height:110,display:"block"}}>
+        <defs>
+          <linearGradient id={gid} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor={aColor} stopOpacity={0.15}/>
+            <stop offset="100%" stopColor={aColor} stopOpacity={0}/>
+          </linearGradient>
+        </defs>
+        <line x1={P} y1={cy(100)} x2={W-P} y2={cy(100)} stroke={T.border} strokeWidth="1" strokeDasharray="3,3"/>
+        {yearMarks.map(({yr,i})=>(
+          <g key={yr}>
+            <line x1={cx(i)} y1={P} x2={cx(i)} y2={H-P} stroke={T.border} strokeWidth="1" strokeDasharray="2,4"/>
+            <text x={cx(i)} y={H-1} textAnchor="middle" fill={T.textFaint} fontSize="7">{yr}</text>
+          </g>
+        ))}
+        <polygon points={cx(0)+","+(H-P)+" "+aPts+" "+cx(n-1)+","+(H-P)} fill={"url(#"+gid+")"}/>
+        {indexSeries.map(s=>(
+          <polyline key={s.key} points={s.norm.map((v,i)=>cx(i)+","+cy(v)).join(" ")} fill="none" stroke={s.color} strokeWidth="1.8" strokeDasharray="5,3" strokeLinejoin="round" opacity={0.85}/>
+        ))}
+        <polyline points={aPts} fill="none" stroke={aColor} strokeWidth="2.2" strokeLinejoin="round"/>
+        <circle cx={cx(n-1)} cy={cy(aFinal)} r="3.5" fill={aColor}/>
+        {indexSeries.map(s=>(
+          <circle key={s.key} cx={cx(n-1)} cy={cy(s.norm[n-1])} r="3" fill={s.color}/>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+
+// ── Données historiques hebdomadaires Yahoo Finance (indices) ─────────────────
+const YAHOO_IDX_TICKERS = { SP500:'%5EGSPC', NDX:'%5ENDX', CAC40:'%5EFCHI', GOLD:'GC%3DF' };
+
+async function fetchWeeklyHistory(yahooTicker, range='max') {
+  const base = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1wk&range=${range}&includePrePost=false`;
+  const proxies = [
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(base)}`,
+    `https://corsproxy.io/?${encodeURIComponent(base)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(base)}`
+  ];
+  for (const proxy of proxies) {
+    try {
+      const res = await fetch(proxy, { signal: AbortSignal.timeout(13000) });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const result = data?.chart?.result?.[0];
+      if (!result) continue;
+      const ts = result.timestamp;
+      const closes = result.indicators?.quote?.[0]?.close;
+      if (!ts?.length || !closes?.length) continue;
+      const pts = ts.map((t,i) => ({ date: new Date(t*1000), val: closes[i] }))
+                    .filter(p => p.val != null && !isNaN(p.val) && p.val > 0);
+      if (pts.length > 2) return pts;
+    } catch { continue; }
+  }
+  return null;
+}
+
+function intervalToYahooRange(k) {
+  return {'1M':'1mo','3M':'3mo','6M':'6mo','YTD':'ytd','1A':'1y','2A':'2y','5A':'5y','10A':'10y','MAX':'max'}[k]||'max';
+}
+
+// ── Cours historiques hebdomadaires pour un actif du portefeuille ─────────────
+async function fetchTickerWeeklyHistory(ticker) {
+  const t = ticker?.trim();
+  if (!t) return null;
+
+  // Crypto via CoinGecko (historique weekly)
+  const cgId = COINGECKO_IDS[t.toUpperCase()];
+  if (cgId) {
+    const cur = t.toUpperCase().endsWith('-USD') ? 'usd' : 'eur';
+    try {
+      const res = await fetch(
+        `https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=${cur}&days=max&interval=weekly`,
+        { signal: AbortSignal.timeout(12000) }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const pts = (data?.prices||[]).map(([ts,val])=>({date:new Date(ts),val})).filter(p=>p.val>0);
+        if (pts.length > 5) return pts;
+      }
+    } catch {}
+  }
+
+  // ETF/Actions via Stooq (weekly historical CSV) - pas de CORS
+  const stooqT = t.toLowerCase().replace(/,/g,'%2C');
+  const variants = [stooqT];
+  if (stooqT.endsWith('.pa')) { variants.push(stooqT.replace('.pa','.fr')); variants.push(stooqT.replace('.pa','')); }
+  for (const s of variants) {
+    try {
+      const res = await fetch(`https://stooq.com/q/d/l/?s=${s}&f=d&i=w`, { signal: AbortSignal.timeout(9000) });
+      if (!res.ok) continue;
+      const csv = await res.text();
+      const rows = csv.trim().split('\n');
+      if (rows.length < 3) continue;
+      const pts = rows.slice(1).map(row => {
+        const cols = row.split(',');
+        if (cols.length < 5) return null;
+        const d = new Date(cols[0]), v = parseFloat(cols[4]);
+        return (!isNaN(d) && v > 0) ? { date: d, val: v } : null;
+      }).filter(Boolean).sort((a,b) => a.date - b.date);
+      if (pts.length > 5) return pts;
+    } catch { continue; }
+  }
+
+  // Fallback : Yahoo Finance via proxy CORS
+  const yt = encodeURIComponent(t);
+  return fetchWeeklyHistory(yt, 'max');
+}
+
+// ── Construction des valeurs hebdomadaires réelles du compte ──────────────────
+// Utilise les cours historiques si disponibles, sinon interpolation linéaire
+function buildWeeklyAccountValsFromHistory(invs, portfolioHistData, intervalKey) {
+  if (!invs?.length) return [];
+  const today = new Date();
+  const iv = INTERVALS.find(i => i.key === intervalKey);
+  let startDate;
+  if (!iv || iv.key === 'MAX') {
+    const first = Math.min(...invs.filter(i=>i.date).map(i=>new Date(i.date).getTime()));
+    startDate = isFinite(first) ? new Date(first) : new Date(today.getFullYear()-2,0,1);
+  } else if (iv.ytd) {
+    startDate = new Date(today.getFullYear(), 0, 1);
+  } else {
+    startDate = new Date(today);
+    startDate.setMonth(startDate.getMonth() - iv.months);
+  }
+
+  // Générer les vendredis de la période
+  const cur = new Date(startDate);
+  const dow = cur.getDay();
+  if (dow !== 5) cur.setDate(cur.getDate() + ((5 - dow + 7) % 7 || 7));
+  const fridays = [];
+  while (cur <= today) { fridays.push(new Date(cur)); cur.setDate(cur.getDate() + 7); }
+  if (!fridays.length || fridays[fridays.length-1].toDateString() !== today.toDateString())
+    fridays.push(new Date(today));
+
+  // Pré-indexer les données historiques par ticker pour performance
+  const histMaps = {};
+  for (const inv of invs) {
+    const tk = inv.ticker?.trim();
+    if (!tk || histMaps[tk] !== undefined) continue;
+    const hist = portfolioHistData?.[tk];
+    if (hist?.length) {
+      // Trier par date, construire tableau pour recherche rapide
+      const sorted = [...hist].sort((a,b) => a.date - b.date);
+      histMaps[tk] = sorted;
+    } else {
+      histMaps[tk] = null;
+    }
+  }
+
+  // Trouver le cours le plus proche d'une date cible (tolérance ±4 jours)
+  const getPriceOn = (ticker, targetDate) => {
+    const sorted = histMaps[ticker?.trim()];
+    if (!sorted) return null;
+    const tgt = targetDate.getTime();
+    let lo = 0, hi = sorted.length - 1, best = null, bestDiff = 4*24*3600*1000;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      const diff = Math.abs(sorted[mid].date.getTime() - tgt);
+      if (diff < bestDiff) { bestDiff = diff; best = sorted[mid].val; }
+      if (sorted[mid].date.getTime() < tgt) lo = mid + 1; else hi = mid - 1;
+    }
+    return best;
+  };
+
+  return fridays.map(friday => {
+    const totalVal = invs.reduce((sum, inv) => {
+      if (!inv.date || !inv.quantity) return sum;
+      const buyDate = new Date(inv.date);
+      if (friday < buyDate) return sum;
+
+      // Cours historique réel disponible ?
+      const histPrice = getPriceOn(inv.ticker, friday);
+      if (histPrice != null && histPrice > 0) {
+        return sum + histPrice * inv.quantity;
+      }
+
+      // Interpolation linéaire (fallback si pas de données historiques)
+      const buyVal = (inv.buyPrice ?? 0) * inv.quantity;
+      const curVal = ((inv.currentPrice ?? inv.buyPrice) ?? 0) * inv.quantity;
+      const span = today.getTime() - buyDate.getTime();
+      if (span <= 0) return sum + curVal;
+      const t2 = Math.min((friday.getTime() - buyDate.getTime()) / span, 1);
+      return sum + buyVal + (curVal - buyVal) * t2;
+    }, 0);
+    return { date: friday, val: totalVal };
+  }).filter(p => p.val > 0);
+}
+
+// ── Graphique comparatif hebdomadaire (compte + indices) ──────────────────────
+function ComparisonChartWeekly({ id, accountPts, indexHistData, activeIndices, indexHistLoading, portfolioHistLoading, T }) {
+  const W=700, H=120, P=6;
+  if (!accountPts?.length || accountPts.length < 2) {
+    if (portfolioHistLoading) return (
+      <div style={{textAlign:"center",padding:"24px 0",color:T.textMuted,fontSize:12}}>
+        <span style={{display:"inline-block",animation:"spin 1s linear infinite",marginRight:6}}>⟳</span>
+        Chargement des cours historiques…
+      </div>
+    );
+    return null;
+  }
+  const baseVal = accountPts[0].val;
+  if (!baseVal || baseVal <= 0) return null;
+  const n = accountPts.length;
+  const aN = accountPts.map(p => p.val / baseVal * 100);
+  const startDate = accountPts[0].date;
+  const endDate   = accountPts[n-1].date;
+  const dateRange = Math.max(endDate - startDate, 1);
+
+  const indexSeries = Object.entries(INDICES)
+    .filter(([k]) => activeIndices.includes(k))
+    .map(([k, idx]) => {
+      const hist = indexHistData?.[k];
+      if (!hist?.length) return null;
+      const filtered = hist.filter(p => p.date >= startDate && p.date <= endDate);
+      if (filtered.length < 2) return null;
+      const base = filtered[0].val;
+      if (!base || base <= 0) return null;
+      return { key:k, label:idx.label, color:idx.color,
+               dates: filtered.map(p=>p.date),
+               norm:  filtered.map(p=>p.val/base*100) };
+    }).filter(Boolean);
+
+  const allVals = [...aN, ...indexSeries.flatMap(s => s.norm)];
+  const mn = Math.min(...allVals)-2, mx = Math.max(...allVals)+2;
+  const rng = Math.max(mx-mn, 1);
+  const cx = date => P + (date - startDate) / dateRange * (W - P*2);
+  const cy = v    => H - P - (v - mn) / rng * (H - P*2);
+  const aFinal = aN[n-1];
+  const aColor = aFinal >= 100 ? '#34d399' : '#f87171';
+  const gid  = 'gwk_' + id.replace(/[^a-z0-9]/gi,'');
+  const aPts = accountPts.map(p => `${cx(p.date).toFixed(1)},${cy(p.val/baseVal*100).toFixed(1)}`).join(' ');
+  const yearMarks = []; let lastYr = -1;
+  accountPts.forEach(p => { const yr=p.date.getFullYear(); if(yr!==lastYr){yearMarks.push({yr,date:p.date});lastYr=yr;} });
+
+  return (
+    <div>
+      <div style={{display:"flex",gap:14,marginBottom:8,flexWrap:"wrap",alignItems:"center"}}>
+        <div style={{display:"flex",alignItems:"center",gap:5}}>
+          <svg width="18" height="4"><line x1="0" y1="2" x2="18" y2="2" stroke={aColor} strokeWidth="2.5"/></svg>
+          <span style={{fontSize:12,color:aColor,fontWeight:700}}>
+            {aFinal>=100?"+":""}{(aFinal-100).toFixed(1)}% votre actif
+            {portfolioHistLoading&&<span style={{fontSize:10,opacity:0.6,marginLeft:4}}>⟳</span>}
+          </span>
+        </div>
+        {indexSeries.map(s => {
+          const sLast = s.norm[s.norm.length-1];
+          return (
+            <div key={s.key} style={{display:"flex",alignItems:"center",gap:5}}>
+              <svg width="18" height="4"><line x1="0" y1="2" x2="18" y2="2" stroke={s.color} strokeWidth="2" strokeDasharray="4,3"/></svg>
+              <span style={{fontSize:12,color:s.color,fontWeight:600}}>{s.label} {sLast>=100?"+":""}{(sLast-100).toFixed(1)}%</span>
+            </div>
+          );
+        })}
+        {indexHistLoading && activeIndices.filter(k => !indexHistData?.[k]).map(k => (
+          <span key={k} style={{fontSize:11,color:T.textMuted,display:"flex",alignItems:"center",gap:3}}>
+            <span style={{display:"inline-block",animation:"spin 1s linear infinite"}}>⟳</span>
+            {INDICES[k]?.label}
+          </span>
+        ))}
+        <span style={{fontSize:11,color:T.textMuted,marginLeft:"auto"}}>base 100</span>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:110,display:"block"}}>
+        <defs>
+          <linearGradient id={gid} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor={aColor} stopOpacity="0.15"/>
+            <stop offset="100%" stopColor={aColor} stopOpacity="0"/>
+          </linearGradient>
+        </defs>
+        <line x1={P} y1={cy(100)} x2={W-P} y2={cy(100)} stroke={T.border} strokeWidth="1" strokeDasharray="3,3"/>
+        {yearMarks.map(({yr,date}) => (
+          <g key={yr}>
+            <line x1={cx(date).toFixed(1)} y1={P} x2={cx(date).toFixed(1)} y2={H-P} stroke={T.border} strokeWidth="1" strokeDasharray="2,4"/>
+            <text x={cx(date).toFixed(1)} y={H-1} textAnchor="middle" fill={T.textFaint} fontSize="7">{yr}</text>
+          </g>
+        ))}
+        <polygon points={`${cx(accountPts[0].date).toFixed(1)},${H-P} ${aPts} ${cx(accountPts[n-1].date).toFixed(1)},${H-P}`} fill={`url(#${gid})`}/>
+        {indexSeries.map(s => (
+          <polyline key={s.key}
+            points={s.dates.map((d,i)=>`${cx(d).toFixed(1)},${cy(s.norm[i]).toFixed(1)}`).join(' ')}
+            fill="none" stroke={s.color} strokeWidth="1.8" strokeDasharray="5,3" strokeLinejoin="round" opacity="0.85"/>
+        ))}
+        <polyline points={aPts} fill="none" stroke={aColor} strokeWidth="2.2" strokeLinejoin="round"/>
+        <circle cx={cx(accountPts[n-1].date).toFixed(1)} cy={cy(aFinal).toFixed(1)} r="3.5" fill={aColor}/>
+        {indexSeries.map(s => (
+          <circle key={s.key}
+            cx={cx(s.dates[s.dates.length-1]).toFixed(1)}
+            cy={cy(s.norm[s.norm.length-1]).toFixed(1)}
+            r="3" fill={s.color}/>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+// ── Index overview chart (standalone) ────────────────────────────────────────
+// ── Base de tickers connus ────────────────────────────────────────────────────
+const TICKER_DB = [
+  // ── ETF éligibles PEA France (100 principaux) ──────────────────────────────
+  { t:"CL2.PA",    n:"Amundi ETF Levier MSCI USA Daily (x2)",    cat:"ETF PEA" },
+  { t:"LQQ.PA",    n:"Amundi ETF Levier Nasdaq 100 Daily (x2)",  cat:"ETF PEA" },
+  // MSCI World PEA
+  { t:"DCAM.PA",   n:"Amundi PEA Monde MSCI World ACC",        cat:"ETF PEA" },
+  { t:"WPEA.PA",   n:"iShares MSCI World Swap PEA ACC",         cat:"ETF PEA" },
+  { t:"EWLD.PA",   n:"Amundi MSCI World UCITS DIS",             cat:"ETF PEA" },
+  // S&P 500 PEA
+  { t:"ESE.PA",    n:"BNP Paribas Easy S&P 500 ACC",           cat:"ETF PEA" },
+  { t:"500.PA",    n:"Amundi S&P 500 UCITS ACC",                cat:"ETF PEA" },
+  { t:"SPEA.PA",   n:"iShares S&P 500 Swap PEA ACC",            cat:"ETF PEA" },
+  { t:"PE500.PA",  n:"Amundi PEA S&P 500 ESG ACC",              cat:"ETF PEA" },
+  { t:"PSPX.PA",   n:"BNP Paribas Easy S&P 500 ESG ACC",       cat:"ETF PEA" },
+  { t:"MSE.PA",    n:"Lyxor S&P 500 UCITS ACC",                 cat:"ETF PEA" },
+  // Nasdaq 100 PEA
+  { t:"PUST.PA",   n:"Amundi PEA Nasdaq 100 ACC",              cat:"ETF PEA" },
+  { t:"UST.PA",    n:"Amundi Nasdaq 100 UCITS ACC",             cat:"ETF PEA" },
+  { t:"NASD.PA",   n:"Lyxor Nasdaq 100 UCITS ACC",              cat:"ETF PEA" },
+  { t:"PANX.PA",   n:"Amundi PEA Nasdaq 100 ACC v2",           cat:"ETF PEA" },
+  // CAC 40
+  { t:"C40.PA",    n:"Amundi CAC 40 UCITS ACC",                 cat:"ETF PEA" },
+  { t:"CACC.PA",   n:"BNP Paribas Easy CAC 40 ESG ACC",        cat:"ETF PEA" },
+  // Euro Stoxx 50
+  { t:"SXRT.PA",   n:"Amundi Euro Stoxx 50 UCITS ACC",          cat:"ETF PEA" },
+  { t:"CS51.PA",   n:"BNP Paribas Easy Euro Stoxx 50 ACC",     cat:"ETF PEA" },
+  { t:"C50.PA",    n:"Amundi Euro Stoxx 50 ETF DIS",            cat:"ETF PEA" },
+  { t:"EURO.PA",   n:"iShares Core Euro Stoxx 50 ACC",          cat:"ETF PEA" },
+  // STOXX Europe 600
+  { t:"ETZ.PA",    n:"BNP Paribas Easy Stoxx Europe 600 ACC",  cat:"ETF PEA" },
+  { t:"MMS.PA",    n:"Amundi Stoxx Europe 600 ACC",             cat:"ETF PEA" },
+  { t:"MEUD.PA",   n:"Lyxor Core Stoxx Europe 600 ACC",        cat:"ETF PEA" },
+  // MSCI Europe
+  { t:"MFEE.PA",   n:"Amundi MSCI Europe ACC",                  cat:"ETF PEA" },
+  { t:"LCEU.PA",   n:"Amundi Index MSCI Europe ACC",            cat:"ETF PEA" },
+  // Emerging Markets PEA
+  { t:"PAEEM.PA",  n:"Amundi PEA MSCI EM ESG Leaders ACC",     cat:"ETF PEA" },
+  { t:"PLEM.PA",   n:"Amundi PEA MSCI Emerging Markets ACC",   cat:"ETF PEA" },
+  { t:"AEEM.PA",   n:"Amundi MSCI Emerging Markets ACC",        cat:"ETF PEA" },
+  // Asie / Japon / Chine
+  { t:"PAASI.PA",  n:"Amundi PEA MSCI Asia Pacific ex-Japan",  cat:"ETF PEA" },
+  { t:"JPNH.PA",   n:"Amundi PEA Japan TOPIX ACC",             cat:"ETF PEA" },
+  { t:"PJPN.PA",   n:"Amundi PEA Japon ACC",                   cat:"ETF PEA" },
+  { t:"PCHN.PA",   n:"Amundi PEA MSCI China ACC",              cat:"ETF PEA" },
+  { t:"INDIAGR.PA",n:"Amundi MSCI India ACC",                   cat:"ETF PEA" },
+  // Small Cap
+  { t:"RS2K.PA",   n:"Amundi PEA Russell 2000 ACC",            cat:"ETF PEA" },
+  { t:"SMRT.PA",   n:"Amundi Stoxx Europe Small 200 ACC",      cat:"ETF PEA" },
+  { t:"ESM.PA",    n:"BNP Easy MSCI Europe Small Caps ACC",    cat:"ETF PEA" },
+  // Sectoriels PEA
+  { t:"TPXH.PA",   n:"Amundi MSCI World Health Care ACC",      cat:"ETF PEA" },
+  { t:"AWTC.PA",   n:"Amundi MSCI World Technology ACC",       cat:"ETF PEA" },
+  { t:"BNKE.PA",   n:"Lyxor Euro Stoxx Banks ACC",             cat:"ETF PEA" },
+  { t:"ENRG.PA",   n:"Lyxor MSCI World Energy ACC",            cat:"ETF PEA" },
+  { t:"PMAT.PA",   n:"Amundi PEA MSCI World Materials ACC",    cat:"ETF PEA" },
+  { t:"PINE.PA",   n:"Amundi PEA MSCI World Industrials ACC",  cat:"ETF PEA" },
+  { t:"PSRT.PA",   n:"Amundi PEA MSCI World Real Estate ACC",  cat:"ETF PEA" },
+  { t:"PCOM.PA",   n:"Amundi PEA MSCI World Communication ACC",cat:"ETF PEA" },
+  { t:"PCON.PA",   n:"Amundi PEA MSCI World Consumer Disc ACC",cat:"ETF PEA" },
+  { t:"PFIN.PA",   n:"Amundi PEA MSCI World Financials ACC",   cat:"ETF PEA" },
+  { t:"PUTS.PA",   n:"Amundi PEA MSCI World Utilities ACC",    cat:"ETF PEA" },
+  // Thematiques PEA
+  { t:"EAU.PA",    n:"Lyxor World Water ACC",                   cat:"ETF PEA" },
+  { t:"GOAI.PA",   n:"Amundi MSCI AI & Big Data ACC",           cat:"ETF PEA" },
+  { t:"ROBO.PA",   n:"Lyxor Robo & Drone ACC",                  cat:"ETF PEA" },
+  { t:"CBSE.PA",   n:"Amundi MSCI Cybersecurity ACC",           cat:"ETF PEA" },
+  { t:"ELR.PA",    n:"Lyxor MSCI Electric Vehicles ACC",        cat:"ETF PEA" },
+  { t:"CLEU.PA",   n:"Amundi Low Carbon 100 Europe ACC",        cat:"ETF PEA" },
+  // ESG PEA
+  { t:"WELV.PA",   n:"Amundi MSCI World ESG ACC",               cat:"ETF PEA" },
+  { t:"LYPS.PA",   n:"Lyxor MSCI Europe ESG Leaders ACC",      cat:"ETF PEA" },
+  { t:"FESG.PA",   n:"BNP Easy Euro Stoxx 50 ESG ACC",         cat:"ETF PEA" },
+  { t:"USRI.PA",   n:"BNP Paribas Easy MSCI USA SRI ACC",      cat:"ETF PEA" },
+  // Smart Beta / Factoriels
+  { t:"MVOL.PA",   n:"Amundi MSCI World Min Volatility ACC",   cat:"ETF PEA" },
+  { t:"QVFD.PA",   n:"Amundi MSCI World Quality Factor ACC",   cat:"ETF PEA" },
+  { t:"MDIV.PA",   n:"Amundi MSCI Europe High Dividend ACC",   cat:"ETF PEA" },
+  { t:"SDV.PA",    n:"Lyxor Euro Stoxx 50 Dividendes+ ACC",    cat:"ETF PEA" },
+  { t:"GLDV.PA",   n:"SPDR S&P Global Dividend Aristocrats",   cat:"ETF PEA" },
+  { t:"EMVL.PA",   n:"iShares Edge MSCI Europe Min Vol ACC",   cat:"ETF PEA" },
+  { t:"EQVL.PA",   n:"iShares Edge MSCI Europe Value ACC",     cat:"ETF PEA" },
+  // Obligations éligibles PEA
+  { t:"MTE.PA",    n:"Lyxor Euro Government Bond 7-10Y ACC",   cat:"ETF PEA" },
+  { t:"EMC.PA",    n:"Lyxor Euro Corp Bond ACC",               cat:"ETF PEA" },
+  // USA / Multi-zone PEA
+  { t:"PAUD.PA",   n:"Amundi PEA USA DIS",                     cat:"ETF PEA" },
+  { t:"PMAE.PA",   n:"Amundi PEA MSCI USA ACC",                cat:"ETF PEA" },
+  { t:"IUSD.PA",   n:"BNP Paribas Easy MSCI USA ACC",          cat:"ETF PEA" },
+  { t:"PMEH.PA",   n:"Amundi PEA MSCI Europe Hedged ACC",      cat:"ETF PEA" },
+  { t:"ESEH.PA",   n:"BNP Easy S&P 500 EUR Hedged ACC",        cat:"ETF PEA" },
+  { t:"WRDV.PA",   n:"Amundi MSCI World High Dividend DIS",    cat:"ETF PEA" },
+  { t:"MWRLD.PA",  n:"Amundi MSCI World DIS",                  cat:"ETF PEA" },
+  // BNP divers
+  { t:"PNMR.PA",   n:"BNP Easy MSCI North America ACC",        cat:"ETF PEA" },
+  { t:"PBJP.PA",   n:"BNP Easy MSCI Japan ACC",                cat:"ETF PEA" },
+  { t:"PBPK.PA",   n:"BNP Easy MSCI Pacific ex-Japan ACC",     cat:"ETF PEA" },
+  // Amundi divers
+  { t:"MWRDA.PA",  n:"Amundi World ex-Europe ACC",             cat:"ETF PEA" },
+  { t:"AGGH.PA",   n:"Amundi Global Agg Bond Hedged ACC",      cat:"ETF PEA" },
+  // iShares Paris
+  { t:"CS1.PA",    n:"iShares Core Euro Stoxx 50 Paris ACC",   cat:"ETF PEA" },
+  { t:"IWDA.PA",   n:"iShares MSCI World Paris ACC",           cat:"ETF PEA" },
+  { t:"CEMA.PA",   n:"iShares Core MSCI EM Paris ACC",         cat:"ETF PEA" },
+  // Lyxor / Societe Generale
+  { t:"LCAS.PA",   n:"Lyxor CAC 40 ESG (DR) ACC",             cat:"ETF PEA" },
+  { t:"LGO.PA",    n:"Lyxor MSCI World Growth ACC",            cat:"ETF PEA" },
+  { t:"LVO.PA",    n:"Lyxor MSCI World Value ACC",             cat:"ETF PEA" },
+  { t:"LYQD.PA",   n:"Lyxor iBoxx EUR Liquid Corp ACC",        cat:"ETF PEA" },
+  { t:"LQDE.PA",   n:"Lyxor iBoxx EUR Liquid HY ACC",          cat:"ETF PEA" },
+
+  { t:"CW8.PA", n:"Amundi MSCI World", cat:"ETF" },
+  { t:"EWLD.PA", n:"Lyxor MSCI World", cat:"ETF" },
+  { t:"500.PA", n:"Amundi S&P 500", cat:"ETF" },
+  { t:"ESE.PA", n:"BNP Paribas S&P 500", cat:"ETF" },
+  { t:"RS2K.PA", n:"Amundi Russell 2000", cat:"ETF" },
+  { t:"PUST.PA", n:"Lyxor Nasdaq 100", cat:"ETF" },
+  { t:"UST.PA", n:"Amundi Nasdaq 100", cat:"ETF" },
+  { t:"PANX.PA", n:"Amundi Nasdaq 100 PEA", cat:"ETF" },
+  { t:"PAASI.PA", n:"Amundi MSCI Asia", cat:"ETF" },
+  { t:"JPNH.PA", n:"Amundi Japan", cat:"ETF" },
+  { t:"EAU.PA", n:"Lyxor Water", cat:"ETF" },
+  { t:"MSE.PA", n:"Lyxor S&P 500", cat:"ETF" },
+  { t:"NASD.PA", n:"Lyxor Nasdaq", cat:"ETF" },
+  { t:"MWRD.PA", n:"Amundi MSCI World Dist", cat:"ETF" },
+  { t:"IWDA.AS", n:"iShares MSCI World", cat:"ETF" },
+  { t:"CSPX.AS", n:"iShares Core S&P 500", cat:"ETF" },
+  { t:"EIMI.AS", n:"iShares MSCI EM", cat:"ETF" },
+  { t:"IUSN.AS", n:"iShares MSCI World Small Cap", cat:"ETF" },
+  { t:"VWCE.DE", n:"Vanguard FTSE All-World", cat:"ETF" },
+  { t:"VUSA.AS", n:"Vanguard S&P 500", cat:"ETF" },
+  { t:"VAGF.AS", n:"Vanguard Global Agg Bond", cat:"ETF" },
+  { t:"VEUR.AS", n:"Vanguard FTSE Developed Europe", cat:"ETF" },
+  { t:"LCWD.PA", n:"L&G MSCI World", cat:"ETF" },
+  { t:"BNXW.PA", n:"BNP MSCI World", cat:"ETF" },
+  { t:"INDIAGR.PA", n:"Amundi MSCI India", cat:"ETF" },
+  { t:"AASI.PA", n:"Amundi MSCI Asia Ex Japan", cat:"ETF" },
+  { t:"AC.PA", n:"Accor", cat:"Actions" },
+  { t:"AI.PA", n:"Air Liquide", cat:"Actions" },
+  { t:"AIR.PA", n:"Airbus", cat:"Actions" },
+  { t:"MT.AS", n:"ArcelorMittal", cat:"Actions" },
+  { t:"CS.PA", n:"AXA", cat:"Actions" },
+  { t:"BN.PA", n:"Danone", cat:"Actions" },
+  { t:"DSY.PA", n:"Dassault Systemes", cat:"Actions" },
+  { t:"ENI.PA", n:"Engie", cat:"Actions" },
+  { t:"ENGI.PA", n:"Engie", cat:"Actions" },
+  { t:"EL.PA", n:"EssilorLuxottica", cat:"Actions" },
+  { t:"ERF.PA", n:"Eurofins Scientific", cat:"Actions" },
+  { t:"RMS.PA", n:"Hermes International", cat:"Actions" },
+  { t:"KER.PA", n:"Kering", cat:"Actions" },
+  { t:"LR.PA", n:"Legrand", cat:"Actions" },
+  { t:"OR.PA", n:"L\'Oreal", cat:"Actions" },
+  { t:"MC.PA", n:"LVMH", cat:"Actions" },
+  { t:"ML.PA", n:"Michelin", cat:"Actions" },
+  { t:"ORA.PA", n:"Orange", cat:"Actions" },
+  { t:"RI.PA", n:"Pernod Ricard", cat:"Actions" },
+  { t:"PUB.PA", n:"Publicis Groupe", cat:"Actions" },
+  { t:"RNO.PA", n:"Renault", cat:"Actions" },
+  { t:"SAF.PA", n:"Safran", cat:"Actions" },
+  { t:"SAN.PA", n:"Sanofi", cat:"Actions" },
+  { t:"SU.PA", n:"Schneider Electric", cat:"Actions" },
+  { t:"GLE.PA", n:"Societe Generale", cat:"Actions" },
+  { t:"SW.PA", n:"Sodexo", cat:"Actions" },
+  { t:"STLAM.MI", n:"Stellantis", cat:"Actions" },
+  { t:"STM.PA", n:"STMicroelectronics", cat:"Actions" },
+  { t:"TEP.PA", n:"Teleperformance", cat:"Actions" },
+  { t:"HO.PA", n:"Thales", cat:"Actions" },
+  { t:"TTE.PA", n:"TotalEnergies", cat:"Actions" },
+  { t:"URW.AS", n:"Unibail-Rodamco-Westfield", cat:"Actions" },
+  { t:"VK.PA", n:"Vallourec", cat:"Actions" },
+  { t:"VIE.PA", n:"Veolia", cat:"Actions" },
+  { t:"DG.PA", n:"Vinci", cat:"Actions" },
+  { t:"VIV.PA", n:"Vivendi", cat:"Actions" },
+  { t:"WLN.PA", n:"Worldline", cat:"Actions" },
+  { t:"CAP.PA", n:"Capgemini", cat:"Actions" },
+  { t:"BNP.PA", n:"BNP Paribas", cat:"Actions" },
+  { t:"ACA.PA", n:"Credit Agricole", cat:"Actions" },
+  { t:"SGO.PA", n:"Saint-Gobain", cat:"Actions" },
+  { t:"SG.PA", n:"Societe Generale", cat:"Actions" },
+  { t:"ADS.DE", n:"Adidas", cat:"Actions" },
+  { t:"ALV.DE", n:"Allianz", cat:"Actions" },
+  { t:"BAYN.DE", n:"Bayer", cat:"Actions" },
+  { t:"BMW.DE", n:"BMW", cat:"Actions" },
+  { t:"BAS.DE", n:"BASF", cat:"Actions" },
+  { t:"CON.DE", n:"Continental", cat:"Actions" },
+  { t:"DAI.DE", n:"Mercedes-Benz", cat:"Actions" },
+  { t:"DB1.DE", n:"Deutsche Boerse", cat:"Actions" },
+  { t:"DBK.DE", n:"Deutsche Bank", cat:"Actions" },
+  { t:"DHL.DE", n:"DHL Group", cat:"Actions" },
+  { t:"DPW.DE", n:"Deutsche Post", cat:"Actions" },
+  { t:"DTE.DE", n:"Deutsche Telekom", cat:"Actions" },
+  { t:"EON.DE", n:"E.ON", cat:"Actions" },
+  { t:"FME.DE", n:"Fresenius Medical Care", cat:"Actions" },
+  { t:"FRE.DE", n:"Fresenius", cat:"Actions" },
+  { t:"HEI.DE", n:"HeidelbergCement", cat:"Actions" },
+  { t:"HEN3.DE", n:"Henkel", cat:"Actions" },
+  { t:"IFX.DE", n:"Infineon", cat:"Actions" },
+  { t:"LIN.DE", n:"Linde", cat:"Actions" },
+  { t:"MBG.DE", n:"Mercedes-Benz Group", cat:"Actions" },
+  { t:"MRK.DE", n:"Merck KGaA", cat:"Actions" },
+  { t:"MUV2.DE", n:"Munich Re", cat:"Actions" },
+  { t:"RWE.DE", n:"RWE", cat:"Actions" },
+  { t:"SAP.DE", n:"SAP", cat:"Actions" },
+  { t:"SIE.DE", n:"Siemens", cat:"Actions" },
+  { t:"VOW3.DE", n:"Volkswagen", cat:"Actions" },
+  { t:"AZN.L", n:"AstraZeneca", cat:"Actions" },
+  { t:"BA.L", n:"BAE Systems", cat:"Actions" },
+  { t:"BARC.L", n:"Barclays", cat:"Actions" },
+  { t:"BP.L", n:"BP", cat:"Actions" },
+  { t:"BRBY.L", n:"Burberry", cat:"Actions" },
+  { t:"BT.L", n:"BT Group", cat:"Actions" },
+  { t:"CRH.L", n:"CRH", cat:"Actions" },
+  { t:"DGE.L", n:"Diageo", cat:"Actions" },
+  { t:"GLEN.L", n:"Glencore", cat:"Actions" },
+  { t:"HMSO.L", n:"Hammerson", cat:"Actions" },
+  { t:"HSBA.L", n:"HSBC", cat:"Actions" },
+  { t:"IMB.L", n:"Imperial Brands", cat:"Actions" },
+  { t:"IHG.L", n:"IHG Hotels", cat:"Actions" },
+  { t:"III.L", n:"3i Group", cat:"Actions" },
+  { t:"LGEN.L", n:"Legal & General", cat:"Actions" },
+  { t:"LLOY.L", n:"Lloyds Banking", cat:"Actions" },
+  { t:"MKS.L", n:"Marks & Spencer", cat:"Actions" },
+  { t:"NG.L", n:"National Grid", cat:"Actions" },
+  { t:"NXT.L", n:"Next", cat:"Actions" },
+  { t:"PRU.L", n:"Prudential", cat:"Actions" },
+  { t:"REL.L", n:"RELX", cat:"Actions" },
+  { t:"RIO.L", n:"Rio Tinto", cat:"Actions" },
+  { t:"RKT.L", n:"Reckitt", cat:"Actions" },
+  { t:"RR.L", n:"Rolls-Royce", cat:"Actions" },
+  { t:"SBRY.L", n:"Sainsbury", cat:"Actions" },
+  { t:"SHEL.L", n:"Shell", cat:"Actions" },
+  { t:"SKG.L", n:"Smurfit Kappa", cat:"Actions" },
+  { t:"SMDS.L", n:"DS Smith", cat:"Actions" },
+  { t:"SSE.L", n:"SSE", cat:"Actions" },
+  { t:"STJ.L", n:"St. James\'s Place", cat:"Actions" },
+  { t:"ULVR.L", n:"Unilever", cat:"Actions" },
+  { t:"VOD.L", n:"Vodafone", cat:"Actions" },
+  { t:"ASML.AS", n:"ASML", cat:"Actions" },
+  { t:"INGA.AS", n:"ING Group", cat:"Actions" },
+  { t:"PHIA.AS", n:"Philips", cat:"Actions" },
+  { t:"RDSA.AS", n:"Shell NL", cat:"Actions" },
+  { t:"UCB.BR", n:"UCB", cat:"Actions" },
+  { t:"ABI.BR", n:"AB InBev", cat:"Actions" },
+  { t:"NESN.SW", n:"Nestle", cat:"Actions" },
+  { t:"NOVN.SW", n:"Novartis", cat:"Actions" },
+  { t:"ROG.SW", n:"Roche", cat:"Actions" },
+  { t:"UBSG.SW", n:"UBS", cat:"Actions" },
+  { t:"ZURN.SW", n:"Zurich Insurance", cat:"Actions" },
+  { t:"CSGN.SW", n:"Credit Suisse", cat:"Actions" },
+  { t:"SAN.MC", n:"Banco Santander", cat:"Actions" },
+  { t:"BBVA.MC", n:"BBVA", cat:"Actions" },
+  { t:"ITX.MC", n:"Inditex", cat:"Actions" },
+  { t:"IBE.MC", n:"Iberdrola", cat:"Actions" },
+  { t:"REP.MC", n:"Repsol", cat:"Actions" },
+  { t:"TEF.MC", n:"Telefonica", cat:"Actions" },
+  { t:"ENE.MC", n:"Endesa", cat:"Actions" },
+  { t:"AMS.MC", n:"Amadeus IT", cat:"Actions" },
+  { t:"ENI.MI", n:"ENI", cat:"Actions" },
+  { t:"ENEL.MI", n:"Enel", cat:"Actions" },
+  { t:"FCA.MI", n:"Ferrari", cat:"Actions" },
+  { t:"G.MI", n:"Generali", cat:"Actions" },
+  { t:"ISP.MI", n:"Intesa Sanpaolo", cat:"Actions" },
+  { t:"LDO.MI", n:"Leonardo", cat:"Actions" },
+  { t:"RACE.MI", n:"Ferrari NV", cat:"Actions" },
+  { t:"TIT.MI", n:"Telecom Italia", cat:"Actions" },
+  { t:"UCG.MI", n:"UniCredit", cat:"Actions" },
+  { t:"AAPL", n:"Apple", cat:"Actions" },
+  { t:"MSFT", n:"Microsoft", cat:"Actions" },
+  { t:"NVDA", n:"Nvidia", cat:"Actions" },
+  { t:"AMZN", n:"Amazon", cat:"Actions" },
+  { t:"GOOGL", n:"Alphabet (Google)", cat:"Actions" },
+  { t:"GOOG", n:"Alphabet C", cat:"Actions" },
+  { t:"META", n:"Meta Platforms", cat:"Actions" },
+  { t:"TSLA", n:"Tesla", cat:"Actions" },
+  { t:"BRK.B", n:"Berkshire Hathaway B", cat:"Actions" },
+  { t:"BRK.A", n:"Berkshire Hathaway A", cat:"Actions" },
+  { t:"LLY", n:"Eli Lilly", cat:"Actions" },
+  { t:"TSM", n:"TSMC", cat:"Actions" },
+  { t:"V", n:"Visa", cat:"Actions" },
+  { t:"JPM", n:"JPMorgan Chase", cat:"Actions" },
+  { t:"UNH", n:"UnitedHealth", cat:"Actions" },
+  { t:"XOM", n:"ExxonMobil", cat:"Actions" },
+  { t:"WMT", n:"Walmart", cat:"Actions" },
+  { t:"MA", n:"Mastercard", cat:"Actions" },
+  { t:"AVGO", n:"Broadcom", cat:"Actions" },
+  { t:"PG", n:"Procter & Gamble", cat:"Actions" },
+  { t:"ADBE", n:"Adobe", cat:"Actions" },
+  { t:"AMD", n:"AMD", cat:"Actions" },
+  { t:"AMGN", n:"Amgen", cat:"Actions" },
+  { t:"ADP", n:"ADP", cat:"Actions" },
+  { t:"AMAT", n:"Applied Materials", cat:"Actions" },
+  { t:"ASML", n:"ASML", cat:"Actions" },
+  { t:"AZN", n:"AstraZeneca US", cat:"Actions" },
+  { t:"CDNS", n:"Cadence Design", cat:"Actions" },
+  { t:"CHTR", n:"Charter Communications", cat:"Actions" },
+  { t:"CMCSA", n:"Comcast", cat:"Actions" },
+  { t:"COST", n:"Costco", cat:"Actions" },
+  { t:"CRWD", n:"CrowdStrike", cat:"Actions" },
+  { t:"CSCO", n:"Cisco", cat:"Actions" },
+  { t:"CSX", n:"CSX", cat:"Actions" },
+  { t:"DDOG", n:"Datadog", cat:"Actions" },
+  { t:"DLTR", n:"Dollar Tree", cat:"Actions" },
+  { t:"DXCM", n:"DexCom", cat:"Actions" },
+  { t:"EA", n:"Electronic Arts", cat:"Actions" },
+  { t:"ENPH", n:"Enphase Energy", cat:"Actions" },
+  { t:"FAST", n:"Fastenal", cat:"Actions" },
+  { t:"FTNT", n:"Fortinet", cat:"Actions" },
+  { t:"GILD", n:"Gilead Sciences", cat:"Actions" },
+  { t:"HON", n:"Honeywell", cat:"Actions" },
+  { t:"IDXX", n:"IDEXX Laboratories", cat:"Actions" },
+  { t:"ILMN", n:"Illumina", cat:"Actions" },
+  { t:"INTC", n:"Intel", cat:"Actions" },
+  { t:"INTU", n:"Intuit", cat:"Actions" },
+  { t:"ISRG", n:"Intuitive Surgical", cat:"Actions" },
+  { t:"KDP", n:"Keurig Dr Pepper", cat:"Actions" },
+  { t:"KHC", n:"Kraft Heinz", cat:"Actions" },
+  { t:"KLAC", n:"KLA Corp", cat:"Actions" },
+  { t:"LRCX", n:"Lam Research", cat:"Actions" },
+  { t:"MAR", n:"Marriott", cat:"Actions" },
+  { t:"MCHP", n:"Microchip Technology", cat:"Actions" },
+  { t:"MDLZ", n:"Mondelez", cat:"Actions" },
+  { t:"MNST", n:"Monster Beverage", cat:"Actions" },
+  { t:"MRK", n:"Merck", cat:"Actions" },
+  { t:"MRNA", n:"Moderna", cat:"Actions" },
+  { t:"MRVL", n:"Marvell", cat:"Actions" },
+  { t:"MSCI", n:"MSCI Inc", cat:"Actions" },
+  { t:"MU", n:"Micron Technology", cat:"Actions" },
+  { t:"NFLX", n:"Netflix", cat:"Actions" },
+  { t:"NXPI", n:"NXP Semiconductors", cat:"Actions" },
+  { t:"ODFL", n:"Old Dominion Freight", cat:"Actions" },
+  { t:"ON", n:"ON Semiconductor", cat:"Actions" },
+  { t:"ORLY", n:"O\'Reilly Auto", cat:"Actions" },
+  { t:"PANW", n:"Palo Alto Networks", cat:"Actions" },
+  { t:"PAYX", n:"Paychex", cat:"Actions" },
+  { t:"PCAR", n:"PACCAR", cat:"Actions" },
+  { t:"PDD", n:"PDD Holdings", cat:"Actions" },
+  { t:"PEP", n:"PepsiCo", cat:"Actions" },
+  { t:"PYPL", n:"PayPal", cat:"Actions" },
+  { t:"QCOM", n:"Qualcomm", cat:"Actions" },
+  { t:"REGN", n:"Regeneron", cat:"Actions" },
+  { t:"ROST", n:"Ross Stores", cat:"Actions" },
+  { t:"SBUX", n:"Starbucks", cat:"Actions" },
+  { t:"SGEN", n:"Seagen", cat:"Actions" },
+  { t:"SMCI", n:"Super Micro Computer", cat:"Actions" },
+  { t:"SNPS", n:"Synopsys", cat:"Actions" },
+  { t:"TEAM", n:"Atlassian", cat:"Actions" },
+  { t:"TMUS", n:"T-Mobile US", cat:"Actions" },
+  { t:"TTD", n:"The Trade Desk", cat:"Actions" },
+  { t:"TXN", n:"Texas Instruments", cat:"Actions" },
+  { t:"VRSK", n:"Verisk Analytics", cat:"Actions" },
+  { t:"VRTX", n:"Vertex Pharmaceuticals", cat:"Actions" },
+  { t:"WBA", n:"Walgreens Boots", cat:"Actions" },
+  { t:"WBD", n:"Warner Bros Discovery", cat:"Actions" },
+  { t:"WDAY", n:"Workday", cat:"Actions" },
+  { t:"XEL", n:"Xcel Energy", cat:"Actions" },
+  { t:"ZM", n:"Zoom", cat:"Actions" },
+  { t:"ZS", n:"Zscaler", cat:"Actions" },
+  { t:"A", n:"Agilent Technologies", cat:"Actions" },
+  { t:"ABBV", n:"AbbVie", cat:"Actions" },
+  { t:"ABT", n:"Abbott Laboratories", cat:"Actions" },
+  { t:"ACN", n:"Accenture", cat:"Actions" },
+  { t:"AFL", n:"Aflac", cat:"Actions" },
+  { t:"AIG", n:"AIG", cat:"Actions" },
+  { t:"AIZ", n:"Assurant", cat:"Actions" },
+  { t:"AJG", n:"Arthur J. Gallagher", cat:"Actions" },
+  { t:"AKAM", n:"Akamai", cat:"Actions" },
+  { t:"ALB", n:"Albemarle", cat:"Actions" },
+  { t:"ALGN", n:"Align Technology", cat:"Actions" },
+  { t:"ALL", n:"Allstate", cat:"Actions" },
+  { t:"ALLE", n:"Allegion", cat:"Actions" },
+  { t:"ALLY", n:"Ally Financial", cat:"Actions" },
+  { t:"ANET", n:"Arista Networks", cat:"Actions" },
+  { t:"AOS", n:"A.O. Smith", cat:"Actions" },
+  { t:"APD", n:"Air Products", cat:"Actions" },
+  { t:"APH", n:"Amphenol", cat:"Actions" },
+  { t:"ARE", n:"Alexandria Real Estate", cat:"Actions" },
+  { t:"ATO", n:"Atmos Energy", cat:"Actions" },
+  { t:"ATVI", n:"Activision Blizzard", cat:"Actions" },
+  { t:"AWK", n:"American Water Works", cat:"Actions" },
+  { t:"AXP", n:"American Express", cat:"Actions" },
+  { t:"AZO", n:"AutoZone", cat:"Actions" },
+  { t:"BA", n:"Boeing", cat:"Actions" },
+  { t:"BAC", n:"Bank of America", cat:"Actions" },
+  { t:"BAX", n:"Baxter International", cat:"Actions" },
+  { t:"BBWI", n:"Bath & Body Works", cat:"Actions" },
+  { t:"BBY", n:"Best Buy", cat:"Actions" },
+  { t:"BDX", n:"Becton Dickinson", cat:"Actions" },
+  { t:"BEN", n:"Franklin Resources", cat:"Actions" },
+  { t:"BIO", n:"Bio-Rad Laboratories", cat:"Actions" },
+  { t:"BIIB", n:"Biogen", cat:"Actions" },
+  { t:"BK", n:"Bank of New York Mellon", cat:"Actions" },
+  { t:"BKR", n:"Baker Hughes", cat:"Actions" },
+  { t:"BMY", n:"Bristol-Myers Squibb", cat:"Actions" },
+  { t:"BSX", n:"Boston Scientific", cat:"Actions" },
+  { t:"BWA", n:"BorgWarner", cat:"Actions" },
+  { t:"BXP", n:"Boston Properties", cat:"Actions" },
+  { t:"C", n:"Citigroup", cat:"Actions" },
+  { t:"CAG", n:"Conagra Brands", cat:"Actions" },
+  { t:"CAH", n:"Cardinal Health", cat:"Actions" },
+  { t:"CAT", n:"Caterpillar", cat:"Actions" },
+  { t:"CB", n:"Chubb", cat:"Actions" },
+  { t:"CBOE", n:"Cboe Global Markets", cat:"Actions" },
+  { t:"CBRE", n:"CBRE Group", cat:"Actions" },
+  { t:"CCI", n:"Crown Castle", cat:"Actions" },
+  { t:"CCL", n:"Carnival", cat:"Actions" },
+  { t:"CDW", n:"CDW", cat:"Actions" },
+  { t:"CE", n:"Celanese", cat:"Actions" },
+  { t:"CF", n:"CF Industries", cat:"Actions" },
+  { t:"CFG", n:"Citizens Financial", cat:"Actions" },
+  { t:"CHD", n:"Church & Dwight", cat:"Actions" },
+  { t:"CHK", n:"Chesapeake Energy", cat:"Actions" },
+  { t:"CI", n:"Cigna", cat:"Actions" },
+  { t:"CINF", n:"Cincinnati Financial", cat:"Actions" },
+  { t:"CL", n:"Colgate-Palmolive", cat:"Actions" },
+  { t:"CLX", n:"Clorox", cat:"Actions" },
+  { t:"CMA", n:"Comerica", cat:"Actions" },
+  { t:"CME", n:"CME Group", cat:"Actions" },
+  { t:"CMG", n:"Chipotle", cat:"Actions" },
+  { t:"CMI", n:"Cummins", cat:"Actions" },
+  { t:"CMS", n:"CMS Energy", cat:"Actions" },
+  { t:"CNC", n:"Centene", cat:"Actions" },
+  { t:"CNP", n:"CenterPoint Energy", cat:"Actions" },
+  { t:"COF", n:"Capital One", cat:"Actions" },
+  { t:"COO", n:"Cooper Companies", cat:"Actions" },
+  { t:"COP", n:"ConocoPhillips", cat:"Actions" },
+  { t:"CPB", n:"Campbell Soup", cat:"Actions" },
+  { t:"CPRT", n:"Copart", cat:"Actions" },
+  { t:"CPT", n:"Camden Property Trust", cat:"Actions" },
+  { t:"CRL", n:"Charles River Laboratories", cat:"Actions" },
+  { t:"CRM", n:"Salesforce", cat:"Actions" },
+  { t:"CTLT", n:"Catalent", cat:"Actions" },
+  { t:"CTSH", n:"Cognizant", cat:"Actions" },
+  { t:"CTVA", n:"Corteva", cat:"Actions" },
+  { t:"CVS", n:"CVS Health", cat:"Actions" },
+  { t:"CVX", n:"Chevron", cat:"Actions" },
+  { t:"D", n:"Dominion Energy", cat:"Actions" },
+  { t:"DAL", n:"Delta Air Lines", cat:"Actions" },
+  { t:"DD", n:"DuPont", cat:"Actions" },
+  { t:"DE", n:"Deere", cat:"Actions" },
+  { t:"DFS", n:"Discover Financial", cat:"Actions" },
+  { t:"DG", n:"Dollar General", cat:"Actions" },
+  { t:"DIS", n:"Walt Disney", cat:"Actions" },
+  { t:"DOV", n:"Dover", cat:"Actions" },
+  { t:"DOW", n:"Dow", cat:"Actions" },
+  { t:"DPZ", n:"Domino\'s Pizza", cat:"Actions" },
+  { t:"DRI", n:"Darden Restaurants", cat:"Actions" },
+  { t:"DTE", n:"DTE Energy", cat:"Actions" },
+  { t:"DUK", n:"Duke Energy", cat:"Actions" },
+  { t:"DVA", n:"DaVita", cat:"Actions" },
+  { t:"DVN", n:"Devon Energy", cat:"Actions" },
+  { t:"DXC", n:"DXC Technology", cat:"Actions" },
+  { t:"EBAY", n:"eBay", cat:"Actions" },
+  { t:"ECL", n:"Ecolab", cat:"Actions" },
+  { t:"ED", n:"Consolidated Edison", cat:"Actions" },
+  { t:"EFX", n:"Equifax", cat:"Actions" },
+  { t:"EIX", n:"Edison International", cat:"Actions" },
+  { t:"EL", n:"Estee Lauder", cat:"Actions" },
+  { t:"EMN", n:"Eastman Chemical", cat:"Actions" },
+  { t:"EMR", n:"Emerson Electric", cat:"Actions" },
+  { t:"EOG", n:"EOG Resources", cat:"Actions" },
+  { t:"EPAM", n:"EPAM Systems", cat:"Actions" },
+  { t:"EQR", n:"Equity Residential", cat:"Actions" },
+  { t:"EQT", n:"EQT", cat:"Actions" },
+  { t:"ES", n:"Eversource Energy", cat:"Actions" },
+  { t:"ESS", n:"Essex Property Trust", cat:"Actions" },
+  { t:"ETN", n:"Eaton", cat:"Actions" },
+  { t:"ETR", n:"Entergy", cat:"Actions" },
+  { t:"ETSY", n:"Etsy", cat:"Actions" },
+  { t:"EVRG", n:"Evergy", cat:"Actions" },
+  { t:"EW", n:"Edwards Lifesciences", cat:"Actions" },
+  { t:"EXC", n:"Exelon", cat:"Actions" },
+  { t:"EXR", n:"Extra Space Storage", cat:"Actions" },
+  { t:"F", n:"Ford Motor", cat:"Actions" },
+  { t:"FANG", n:"Diamondback Energy", cat:"Actions" },
+  { t:"FBHS", n:"Fortune Brands", cat:"Actions" },
+  { t:"FCX", n:"Freeport-McMoRan", cat:"Actions" },
+  { t:"FDS", n:"FactSet Research", cat:"Actions" },
+  { t:"FDX", n:"FedEx", cat:"Actions" },
+  { t:"FE", n:"FirstEnergy", cat:"Actions" },
+  { t:"FFIV", n:"F5 Networks", cat:"Actions" },
+  { t:"FIS", n:"Fidelity National Info", cat:"Actions" },
+  { t:"FISV", n:"Fiserv", cat:"Actions" },
+  { t:"FLT", n:"Fleetcor Technologies", cat:"Actions" },
+  { t:"FMC", n:"FMC", cat:"Actions" },
+  { t:"FRT", n:"Federal Realty Investment", cat:"Actions" },
+  { t:"FSLR", n:"First Solar", cat:"Actions" },
+  { t:"FTV", n:"Fortive", cat:"Actions" },
+  { t:"GD", n:"General Dynamics", cat:"Actions" },
+  { t:"GE", n:"General Electric", cat:"Actions" },
+  { t:"GEN", n:"Gen Digital", cat:"Actions" },
+  { t:"GRMN", n:"Garmin", cat:"Actions" },
+  { t:"GS", n:"Goldman Sachs", cat:"Actions" },
+  { t:"GWW", n:"W.W. Grainger", cat:"Actions" },
+  { t:"HAL", n:"Halliburton", cat:"Actions" },
+  { t:"HAS", n:"Hasbro", cat:"Actions" },
+  { t:"HCA", n:"HCA Healthcare", cat:"Actions" },
+  { t:"HD", n:"Home Depot", cat:"Actions" },
+  { t:"HES", n:"Hess", cat:"Actions" },
+  { t:"HIG", n:"Hartford Financial", cat:"Actions" },
+  { t:"HII", n:"Huntington Ingalls", cat:"Actions" },
+  { t:"HLT", n:"Hilton Worldwide", cat:"Actions" },
+  { t:"HMC", n:"Honda Motor", cat:"Actions" },
+  { t:"HPE", n:"Hewlett Packard Enterprise", cat:"Actions" },
+  { t:"HPQ", n:"HP Inc", cat:"Actions" },
+  { t:"HRL", n:"Hormel Foods", cat:"Actions" },
+  { t:"HSIC", n:"Henry Schein", cat:"Actions" },
+  { t:"HST", n:"Host Hotels", cat:"Actions" },
+  { t:"HSY", n:"Hershey", cat:"Actions" },
+  { t:"HUM", n:"Humana", cat:"Actions" },
+  { t:"HWM", n:"Howmet Aerospace", cat:"Actions" },
+  { t:"IBM", n:"IBM", cat:"Actions" },
+  { t:"ICE", n:"Intercontinental Exchange", cat:"Actions" },
+  { t:"IEX", n:"IDEX", cat:"Actions" },
+  { t:"IFF", n:"International Flavors", cat:"Actions" },
+  { t:"IP", n:"International Paper", cat:"Actions" },
+  { t:"IPG", n:"Interpublic Group", cat:"Actions" },
+  { t:"IQV", n:"IQVIA Holdings", cat:"Actions" },
+  { t:"IR", n:"Ingersoll Rand", cat:"Actions" },
+  { t:"IRM", n:"Iron Mountain", cat:"Actions" },
+  { t:"ITW", n:"Illinois Tool Works", cat:"Actions" },
+  { t:"J", n:"Jacobs Engineering", cat:"Actions" },
+  { t:"JBHT", n:"J.B. Hunt Transport", cat:"Actions" },
+  { t:"JCI", n:"Johnson Controls", cat:"Actions" },
+  { t:"JKHY", n:"Jack Henry & Associates", cat:"Actions" },
+  { t:"JNJ", n:"Johnson & Johnson", cat:"Actions" },
+  { t:"JNPR", n:"Juniper Networks", cat:"Actions" },
+  { t:"K", n:"Kellogg", cat:"Actions" },
+  { t:"KEY", n:"KeyCorp", cat:"Actions" },
+  { t:"KEYS", n:"Keysight Technologies", cat:"Actions" },
+  { t:"KIM", n:"Kimco Realty", cat:"Actions" },
+  { t:"KMPR", n:"Kemper", cat:"Actions" },
+  { t:"KMX", n:"CarMax", cat:"Actions" },
+  { t:"KO", n:"Coca-Cola", cat:"Actions" },
+  { t:"KR", n:"Kroger", cat:"Actions" },
+  { t:"L", n:"Loews", cat:"Actions" },
+  { t:"LEN", n:"Lennar", cat:"Actions" },
+  { t:"LH", n:"Laboratory Corp", cat:"Actions" },
+  { t:"LHX", n:"L3Harris Technologies", cat:"Actions" },
+  { t:"LKQ", n:"LKQ", cat:"Actions" },
+  { t:"LMT", n:"Lockheed Martin", cat:"Actions" },
+  { t:"LOW", n:"Lowe\'s", cat:"Actions" },
+  { t:"LUMN", n:"Lumen Technologies", cat:"Actions" },
+  { t:"LVS", n:"Las Vegas Sands", cat:"Actions" },
+  { t:"LW", n:"Lamb Weston", cat:"Actions" },
+  { t:"LYB", n:"LyondellBasell", cat:"Actions" },
+  { t:"LYV", n:"Live Nation", cat:"Actions" },
+  { t:"MAS", n:"Masco", cat:"Actions" },
+  { t:"MCD", n:"McDonald\'s", cat:"Actions" },
+  { t:"MCK", n:"McKesson", cat:"Actions" },
+  { t:"MCO", n:"Moody\'s", cat:"Actions" },
+  { t:"MELI", n:"MercadoLibre", cat:"Actions" },
+  { t:"MET", n:"MetLife", cat:"Actions" },
+  { t:"MGM", n:"MGM Resorts", cat:"Actions" },
+  { t:"MHK", n:"Mohawk Industries", cat:"Actions" },
+  { t:"MKC", n:"McCormick", cat:"Actions" },
+  { t:"MLM", n:"Martin Marietta Materials", cat:"Actions" },
+  { t:"MMC", n:"Marsh McLennan", cat:"Actions" },
+  { t:"MMM", n:"3M", cat:"Actions" },
+  { t:"MO", n:"Altria Group", cat:"Actions" },
+  { t:"MOH", n:"Molina Healthcare", cat:"Actions" },
+  { t:"MOS", n:"Mosaic", cat:"Actions" },
+  { t:"MPC", n:"Marathon Petroleum", cat:"Actions" },
+  { t:"MPWR", n:"Monolithic Power Systems", cat:"Actions" },
+  { t:"MS", n:"Morgan Stanley", cat:"Actions" },
+  { t:"MSI", n:"Motorola Solutions", cat:"Actions" },
+  { t:"MTB", n:"M&T Bank", cat:"Actions" },
+  { t:"MTD", n:"Mettler-Toledo", cat:"Actions" },
+  { t:"NEM", n:"Newmont", cat:"Actions" },
+  { t:"NEE", n:"NextEra Energy", cat:"Actions" },
+  { t:"NI", n:"NiSource", cat:"Actions" },
+  { t:"NKE", n:"Nike", cat:"Actions" },
+  { t:"NOC", n:"Northrop Grumman", cat:"Actions" },
+  { t:"NOW", n:"ServiceNow", cat:"Actions" },
+  { t:"NRG", n:"NRG Energy", cat:"Actions" },
+  { t:"NSC", n:"Norfolk Southern", cat:"Actions" },
+  { t:"NTRS", n:"Northern Trust", cat:"Actions" },
+  { t:"NUE", n:"Nucor", cat:"Actions" },
+  { t:"NWSA", n:"News Corp A", cat:"Actions" },
+  { t:"O", n:"Realty Income", cat:"Actions" },
+  { t:"OKE", n:"ONEOK", cat:"Actions" },
+  { t:"ORCL", n:"Oracle", cat:"Actions" },
+  { t:"OXY", n:"Occidental Petroleum", cat:"Actions" },
+  { t:"PAYC", n:"Paycom Software", cat:"Actions" },
+  { t:"PEG", n:"Public Service Enterprise", cat:"Actions" },
+  { t:"PFE", n:"Pfizer", cat:"Actions" },
+  { t:"PFG", n:"Principal Financial", cat:"Actions" },
+  { t:"PGR", n:"Progressive", cat:"Actions" },
+  { t:"PH", n:"Parker-Hannifin", cat:"Actions" },
+  { t:"PHM", n:"PulteGroup", cat:"Actions" },
+  { t:"PKG", n:"Packaging Corp", cat:"Actions" },
+  { t:"PLD", n:"Prologis", cat:"Actions" },
+  { t:"PM", n:"Philip Morris", cat:"Actions" },
+  { t:"PNC", n:"PNC Financial", cat:"Actions" },
+  { t:"PNR", n:"Pentair", cat:"Actions" },
+  { t:"PNW", n:"Pinnacle West", cat:"Actions" },
+  { t:"POOL", n:"Pool", cat:"Actions" },
+  { t:"PPG", n:"PPG Industries", cat:"Actions" },
+  { t:"PPL", n:"PPL", cat:"Actions" },
+  { t:"PRU", n:"Prudential Financial", cat:"Actions" },
+  { t:"PSA", n:"Public Storage", cat:"Actions" },
+  { t:"PSX", n:"Phillips 66", cat:"Actions" },
+  { t:"PWR", n:"Quanta Services", cat:"Actions" },
+  { t:"PXD", n:"Pioneer Natural Resources", cat:"Actions" },
+  { t:"RF", n:"Regions Financial", cat:"Actions" },
+  { t:"RJF", n:"Raymond James", cat:"Actions" },
+  { t:"RL", n:"Ralph Lauren", cat:"Actions" },
+  { t:"RMD", n:"ResMed", cat:"Actions" },
+  { t:"ROK", n:"Rockwell Automation", cat:"Actions" },
+  { t:"ROL", n:"Rollins", cat:"Actions" },
+  { t:"ROP", n:"Roper Technologies", cat:"Actions" },
+  { t:"RTX", n:"Raytheon Technologies", cat:"Actions" },
+  { t:"SBAC", n:"SBA Communications", cat:"Actions" },
+  { t:"SHW", n:"Sherwin-Williams", cat:"Actions" },
+  { t:"SIVB", n:"SVB Financial", cat:"Actions" },
+  { t:"SJM", n:"J.M. Smucker", cat:"Actions" },
+  { t:"SLB", n:"SLB", cat:"Actions" },
+  { t:"SNA", n:"Snap-on", cat:"Actions" },
+  { t:"SNDR", n:"Schneider National", cat:"Actions" },
+  { t:"SNOW", n:"Snowflake", cat:"Actions" },
+  { t:"SO", n:"Southern Company", cat:"Actions" },
+  { t:"SPGI", n:"S&P Global", cat:"Actions" },
+  { t:"SPG", n:"Simon Property Group", cat:"Actions" },
+  { t:"SRE", n:"Sempra Energy", cat:"Actions" },
+  { t:"STE", n:"STERIS", cat:"Actions" },
+  { t:"STT", n:"State Street", cat:"Actions" },
+  { t:"STX", n:"Seagate Technology", cat:"Actions" },
+  { t:"STZ", n:"Constellation Brands", cat:"Actions" },
+  { t:"SWK", n:"Stanley Black & Decker", cat:"Actions" },
+  { t:"SWKS", n:"Skyworks Solutions", cat:"Actions" },
+  { t:"SYF", n:"Synchrony Financial", cat:"Actions" },
+  { t:"SYK", n:"Stryker", cat:"Actions" },
+  { t:"SYY", n:"Sysco", cat:"Actions" },
+  { t:"T", n:"AT&T", cat:"Actions" },
+  { t:"TAP", n:"Molson Coors", cat:"Actions" },
+  { t:"TDG", n:"TransDigm", cat:"Actions" },
+  { t:"TDY", n:"Teledyne Technologies", cat:"Actions" },
+  { t:"TEL", n:"TE Connectivity", cat:"Actions" },
+  { t:"TFC", n:"Truist Financial", cat:"Actions" },
+  { t:"TFX", n:"Teleflex", cat:"Actions" },
+  { t:"TGT", n:"Target", cat:"Actions" },
+  { t:"TJX", n:"TJX Companies", cat:"Actions" },
+  { t:"TMO", n:"Thermo Fisher Scientific", cat:"Actions" },
+  { t:"TRMB", n:"Trimble", cat:"Actions" },
+  { t:"TROW", n:"T. Rowe Price", cat:"Actions" },
+  { t:"TRV", n:"Travelers Companies", cat:"Actions" },
+  { t:"TSCO", n:"Tractor Supply", cat:"Actions" },
+  { t:"TT", n:"Trane Technologies", cat:"Actions" },
+  { t:"TTWO", n:"Take-Two Interactive", cat:"Actions" },
+  { t:"TWTR", n:"Twitter", cat:"Actions" },
+  { t:"TYL", n:"Tyler Technologies", cat:"Actions" },
+  { t:"UAL", n:"United Airlines", cat:"Actions" },
+  { t:"UDR", n:"UDR", cat:"Actions" },
+  { t:"UHS", n:"Universal Health Services", cat:"Actions" },
+  { t:"ULTA", n:"Ulta Beauty", cat:"Actions" },
+  { t:"UNP", n:"Union Pacific", cat:"Actions" },
+  { t:"UPS", n:"United Parcel Service", cat:"Actions" },
+  { t:"URI", n:"United Rentals", cat:"Actions" },
+  { t:"USB", n:"US Bancorp", cat:"Actions" },
+  { t:"VFC", n:"VF Corporation", cat:"Actions" },
+  { t:"VLO", n:"Valero Energy", cat:"Actions" },
+  { t:"VMC", n:"Vulcan Materials", cat:"Actions" },
+  { t:"VNO", n:"Vornado Realty", cat:"Actions" },
+  { t:"VNT", n:"Vontier", cat:"Actions" },
+  { t:"VTR", n:"Ventas", cat:"Actions" },
+  { t:"VZ", n:"Verizon", cat:"Actions" },
+  { t:"WAB", n:"Wabtec", cat:"Actions" },
+  { t:"WAT", n:"Waters", cat:"Actions" },
+  { t:"WEC", n:"WEC Energy Group", cat:"Actions" },
+  { t:"WELL", n:"Welltower", cat:"Actions" },
+  { t:"WFC", n:"Wells Fargo", cat:"Actions" },
+  { t:"WHR", n:"Whirlpool", cat:"Actions" },
+  { t:"WM", n:"Waste Management", cat:"Actions" },
+  { t:"WMB", n:"Williams Companies", cat:"Actions" },
+  { t:"WRB", n:"W.R. Berkley", cat:"Actions" },
+  { t:"WRK", n:"WestRock", cat:"Actions" },
+  { t:"WST", n:"West Pharmaceutical Services", cat:"Actions" },
+  { t:"WTW", n:"Willis Towers Watson", cat:"Actions" },
+  { t:"WY", n:"Weyerhaeuser", cat:"Actions" },
+  { t:"XYL", n:"Xylem", cat:"Actions" },
+  { t:"YUM", n:"Yum! Brands", cat:"Actions" },
+  { t:"ZBH", n:"Zimmer Biomet", cat:"Actions" },
+  { t:"ZBRA", n:"Zebra Technologies", cat:"Actions" },
+  { t:"BTC-EUR", n:"Bitcoin (EUR)", cat:"Crypto" },
+  { t:"ETH-EUR", n:"Ethereum (EUR)", cat:"Crypto" },
+  { t:"SOL-EUR", n:"Solana (EUR)", cat:"Crypto" },
+  { t:"BNB-EUR", n:"BNB (EUR)", cat:"Crypto" },
+  { t:"XRP-EUR", n:"XRP (EUR)", cat:"Crypto" },
+  { t:"ADA-EUR", n:"Cardano (EUR)", cat:"Crypto" },
+  { t:"DOGE-EUR", n:"Dogecoin (EUR)", cat:"Crypto" },
+  { t:"BTC-USD", n:"Bitcoin (USD)", cat:"Crypto" },
+  { t:"ETH-USD", n:"Ethereum (USD)", cat:"Crypto" },
+  { t:"SOL-USD", n:"Solana (USD)", cat:"Crypto" },
+  { t:"^GSPC", n:"S&P 500", cat:"Autre" },
+  { t:"^NDX", n:"Nasdaq 100", cat:"Autre" },
+  { t:"^FCHI", n:"CAC 40", cat:"Autre" },
+  { t:"^STOXX50E", n:"Euro Stoxx 50", cat:"Autre" },
+  { t:"^GDAXI", n:"DAX", cat:"Autre" },
+  { t:"^FTSE", n:"FTSE 100", cat:"Autre" },
+  { t:"^N225", n:"Nikkei 225", cat:"Autre" },
+  { t:"LU1832175001", n:"Indépendance AM Europe Small I (C) — PEA-PME", cat:"Actions" },
+  { t:"LU0171304719", n:"BlackRock BGF World Financials Fund A2 EUR", cat:"Actions" },
+  { t:"MUSA",         n:"Columbia S&P 500 Pure Value ETF", cat:"ETF" },
+  { t:"MUSA.PA",      n:"iShares MSCI USA UCITS ETF USD Acc (Euronext)", cat:"ETF" },
+  { t:"CSUS.L",       n:"iShares Core MSCI USA UCITS ETF USD Acc (LSE)", cat:"ETF" },
+  { t:"CSPX.L",       n:"iShares Core S&P 500 UCITS ETF USD Acc (LSE)", cat:"ETF" },
+  { t:"SP5.PA",       n:"Amundi S&P 500 UCITS ETF Dist (SP5)", cat:"ETF" },
+  { t:"TPXH.PA",      n:"Lyxor Japan (Topix) UCITS ETF EUR Hdg Acc", cat:"ETF" },
+  // Actions Monde
+  { t:"WLD.PA",      n:"Amundi MSCI World II UCITS ETF Dist", cat:"ETF" },
+  { t:"EWLD.PA",     n:"Lyxor PEA MSCI World UCITS ETF Acc", cat:"ETF" },
+  { t:"LCUW.PA",     n:"Lyxor Core MSCI World DR UCITS ETF Acc", cat:"ETF" },
+  { t:"MWRD.PA",     n:"Amundi MSCI World UCITS ETF DR Dist", cat:"ETF" },
+  { t:"IWDA.AS",     n:"iShares Core MSCI World UCITS ETF USD Acc", cat:"ETF" },
+  { t:"SWDA.PA",     n:"iShares Core MSCI World UCITS ETF (EUR Hdg)", cat:"ETF" },
+  { t:"ACWI.PA",     n:"Lyxor MSCI All Country World UCITS ETF Acc", cat:"ETF" },
+  // Actions USA
+  { t:"500.PA",      n:"Lyxor PEA S&P 500 UCITS ETF Acc (500.PA)", cat:"ETF" },
+  { t:"PSP5.PA",     n:"Lyxor S&P 500 UCITS ETF Dist EUR", cat:"ETF" },
+  { t:"SP5E.PA",     n:"Amundi S&P 500 ESG UCITS ETF DR Acc", cat:"ETF" },
+  { t:"DJUA.PA",     n:"Lyxor DJ Industrial Average UCITS ETF Dist", cat:"ETF" },
+  { t:"PUST.PA",     n:"Lyxor PEA Nasdaq-100 UCITS ETF Acc", cat:"ETF" },
+  { t:"UST.PA",      n:"Lyxor Nasdaq-100 UCITS ETF Dist EUR", cat:"ETF" },
+  // Actions Europe
+  { t:"MSE.PA",      n:"Amundi Euro Stoxx 50 UCITS ETF Dist (MSE)", cat:"ETF" },
+  { t:"C50.PA",      n:"Lyxor Euro Stoxx 50 DR UCITS ETF Dist", cat:"ETF" },
+  { t:"MEUR.PA",     n:"Lyxor MSCI Europe UCITS ETF Dist", cat:"ETF" },
+  { t:"MEUD.PA",     n:"Lyxor Core Stoxx Europe 600 UCITS ETF Acc", cat:"ETF" },
+  { t:"LCAS.PA",     n:"Lyxor CAC 40 ESG DR UCITS ETF Acc", cat:"ETF" },
+  { t:"C40.PA",      n:"Lyxor CAC 40 UCITS ETF Dist", cat:"ETF" },
+  { t:"DAX.PA",      n:"Lyxor DAX DR UCITS ETF Dist", cat:"ETF" },
+  { t:"SDIV.PA",     n:"Lyxor Stoxx Europe Select Dividend 30 UCITS ETF Dist", cat:"ETF" },
+  // Actions UK / Japon / Asie
+  { t:"UKXE.PA",     n:"Amundi MSCI UK UCITS ETF Acc", cat:"ETF" },
+  { t:"JPNH.PA",     n:"Amundi IS Japan Topix UCITS ETF Hdg EUR Acc", cat:"ETF" },
+  { t:"PAASI.PA",    n:"Lyxor PEA MSCI AC Asia Pacific ex Japan UCITS ETF", cat:"ETF" },
+  // Actions Émergents
+  { t:"AEEM.PA",     n:"Amundi MSCI Emerging Markets UCITS ETF Acc", cat:"ETF" },
+  { t:"PLEM.PA",     n:"Lyxor MSCI Emerging Markets UCITS ETF C-EUR", cat:"ETF" },
+  { t:"EMIM.AS",     n:"iShares Core MSCI Emerging Markets IMI UCITS ETF Acc", cat:"ETF" },
+  // Actions ESG / ISR
+  { t:"MWOS.PA",     n:"iShares MSCI World SRI UCITS ETF EUR Acc", cat:"ETF" },
+  { t:"EESM.PA",     n:"iShares MSCI Europe SRI UCITS ETF EUR Acc", cat:"ETF" },
+  { t:"LGOWI.PA",    n:"Lyxor MSCI World ESG TrendLeaders DR UCITS ETF Acc", cat:"ETF" },
+  { t:"LGUSA.PA",    n:"Lyxor MSCI USA ESG TrendLeaders DR UCITS ETF Acc", cat:"ETF" },
+  // Thématiques
+  { t:"EAU.PA",      n:"Lyxor World Water UCITS ETF Dist (EAU)", cat:"ETF" },
+  { t:"INRG.PA",     n:"iShares Global Clean Energy UCITS ETF USD Dist", cat:"ETF" },
+  { t:"PNRG.PA",     n:"Lyxor New Energy UCITS ETF Dist", cat:"ETF" },
+  { t:"LYXTNOW.PA",  n:"Amundi MSCI World Information Technology UCITS ETF", cat:"ETF" },
+  // Obligations
+  { t:"OBLI.PA",     n:"Lyxor EuroMTS AllMaturities IG DR UCITS ETF Acc", cat:"Obligations" },
+  { t:"GSOVB.PA",    n:"Lyxor Core Euro Govt Bond DR UCITS ETF Acc", cat:"Obligations" },
+  { t:"IBCX.PA",     n:"iShares Euro Corporate Bond UCITS ETF EUR Dist", cat:"Obligations" },
+  { t:"GBRE.PA",     n:"Lyxor Green Bond UCITS ETF Dist", cat:"Obligations" },
+  { t:"LCORP.PA",    n:"Lyxor ESG Euro Corporate Bond DR UCITS ETF Acc", cat:"Obligations" },
+  { t:"IBCI.AS",     n:"iShares Euro Inflation Linked Govt Bond UCITS ETF", cat:"Obligations" },
+  { t:"MFIG.PA",     n:"Amundi Euro Inflation UCITS ETF Acc", cat:"Obligations" },
+  { t:"MLHI.PA",     n:"Lyxor EuroMTS Inflation Linked IG DR UCITS ETF Acc", cat:"Obligations" },
+  { t:"GBPROP.PA",   n:"Lyxor Global Government Bond Hdg EUR UCITS ETF", cat:"Obligations" },
+  // ── OPCVM Boursorama Vie ─────────────────────────────────────────────────────
+  // Fonds euros / monétaires
+  { t:"FR0000989626", n:"Boursorama Sécurité (fonds euros)", cat:"Obligations" },
+  { t:"FR0010510800", n:"Amundi Rendement Plus", cat:"Obligations" },
+  { t:"FR0007010720", n:"BNP Paribas Monétaire", cat:"Obligations" },
+  // Actions monde
+  { t:"FR0010149161", n:"Amundi MSCI World ESG Leaders", cat:"ETF" },
+  { t:"LU0996182563", n:"Amundi IS MSCI World AE-C", cat:"ETF" },
+  { t:"FR0010688275", n:"Amundi IS S&P 500 AE", cat:"ETF" },
+  { t:"LU1681048804", n:"Amundi IS S&P 500 II AE-C (500.PA)", cat:"ETF" },
+  { t:"LU1681043599", n:"Amundi IS MSCI World AE-C (CW8)", cat:"ETF" },
+  { t:"FR0011869353", n:"Amundi IS MSCI World Min Vol AE-C", cat:"ETF" },
+  // Actions Europe
+  { t:"FR0010655472", n:"Amundi IS Euro Stoxx 50 AE-C", cat:"ETF" },
+  { t:"FR0010510974", n:"Amundi IS MSCI Europe AE-C", cat:"ETF" },
+  { t:"FR0010688176", n:"Amundi IS CAC 40 AE-C", cat:"ETF" },
+  { t:"FR0010930735", n:"Amundi IS MSCI Europe ESG Leaders", cat:"ETF" },
+  // Actions émergents
+  { t:"LU1681045370", n:"Amundi IS MSCI Emerging Markets AE-C", cat:"ETF" },
+  { t:"FR0010959676", n:"Amundi IS MSCI Emerging ESG Leaders", cat:"ETF" },
+  // Actions sectorielles
+  { t:"LU1681042864", n:"Amundi IS MSCI World Technology AE-C", cat:"ETF" },
+  { t:"LU1737653890", n:"Amundi IS MSCI World Financials AE-C", cat:"ETF" },
+  // Obligations OPCVM
+  { t:"FR0010754168", n:"Amundi IS Euro Aggregate Bond AE-C", cat:"Obligations" },
+  { t:"LU1050469367", n:"Amundi IS JP Morgan GBI Glbl Gvs AE-C", cat:"Obligations" },
+  { t:"FR0010754119", n:"Amundi IS Euro Corp Bond AE-C", cat:"Obligations" },
+  { t:"FR0010314732", n:"Amundi IS Euro Inflation AE-C", cat:"Obligations" },
+  // Diversifiés / Flexibles
+  { t:"FR0010135103", n:"Carmignac Patrimoine A EUR Acc", cat:"ETF" },
+  { t:"FR0010148981", n:"Carmignac Investissement A EUR Acc", cat:"Actions" },
+  { t:"LU0992628858", n:"M&G (Lux) Optimal Income A EUR Acc", cat:"Obligations" },
+  { t:"LU0119750205", n:"Nordea 1 Stable Return BP EUR", cat:"ETF" },
+  { t:"FR0010321802", n:"Lazard Patrimoine RC EUR", cat:"ETF" },
+  { t:"FR0007475025", n:"Echiquier Patrimoine A", cat:"ETF" },
+  { t:"FR0010434019", n:"Echiquier World Equity Growth A", cat:"Actions" },
+  { t:"LU0129459060", n:"Pictet-Multi Asset Global Opps P EUR", cat:"ETF" },
+  // Immobilier
+  { t:"FR0010585257", n:"AXA Aedificandi A", cat:"Immobilier" },
+  { t:"FR0010169557", n:"Sofidy Sélection 1 A", cat:"Immobilier" },
+  { t:"FR0011045838", n:"Primonial REIM Patrimmo Commerce", cat:"Immobilier" },
+  // Thématiques
+  { t:"INDIAGR.PA",   n:"Amundi OPCVM India Growth", cat:"ETF" },
+  { t:"LU1437020108", n:"BNP Paribas Easy S&P 500 UCITS ETF", cat:"ETF" },
+  { t:"FR0013412285", n:"Lyxor/Candriam ESG Euro Corp Bond", cat:"Obligations" },
+];
+
+// ── TickerInput avec autocomplete et fetch prix auto ─────────────────────────
+function TickerInput({ value, onChange, onPriceFetched, onNameFetched, onCategoryFetched, T }) {
+  const [suggestions, setSuggestions] = useState([]);
+  const [showDrop,    setShowDrop]    = useState(false);
+  const [fetching,    setFetching]    = useState(false);
+  const inp = { background:T.bgInput, border:"1px solid "+(value?"#06b6d4":T.border), borderRadius:8, padding:"12px 14px", color:T.text, fontSize:16, width:"100%", outline:"none" };
+
+  const mapCategory = (cat) => {
+    if (!cat) return null;
+    if (cat === "ETF PEA") return "ETF";
+    if (["Actions","ETF","Crypto","Immobilier","Obligations","Livret","Autre"].includes(cat)) return cat;
+    return "Autre";
+  };
+
+  const handleChange = (e) => {
+    const v = e.target.value;
+    onChange(v);
+    if (v.length >= 1) {
+      const q = v.toLowerCase();
+      const matches = TICKER_DB.filter(item =>
+        item.t.toLowerCase().includes(q) || item.n.toLowerCase().includes(q)
+      ).slice(0, 6);
+      setSuggestions(matches);
+      setShowDrop(matches.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowDrop(false);
+    }
+  };
+
+  // Quand un ticker est sélectionné ou saisi, on fetch le prix
+  const applyTicker = async (ticker, knownName, knownCat) => {
+    onChange(ticker);
+    setShowDrop(false);
+    setSuggestions([]);
+    if (knownName && onNameFetched) onNameFetched(knownName);
+    const mappedCat = mapCategory(knownCat);
+    if (mappedCat && onCategoryFetched) onCategoryFetched(mappedCat);
+    if (!ticker.trim()) return;
+    setFetching(true);
+    try {
+      const result = await fetchPrice(ticker.trim());
+      if (result?.price && result.price > 0) onPriceFetched(result.price);
+    } catch(e) {}
+    setFetching(false);
+  };
+
+  // Fetch aussi quand on quitte le champ (onBlur) si ticker valide
+  const handleBlur = () => {
+    setTimeout(() => setShowDrop(false), 180);
+    if (value && value.trim().length >= 2) {
+      const found = TICKER_DB.find(i => i.t.toUpperCase() === value.trim().toUpperCase());
+      applyTicker(value.trim(), found?.n || null, found?.cat || null);
+    }
+  };
+
+  const catColor = (cat) => ({ Actions:"#34d399", ETF:"#38bdf8", "ETF PEA":"#34d399", Crypto:"#a78bfa", Autre:"#94a3b8" }[cat]||"#94a3b8");
+
+  return (
+    <div style={{position:"relative"}}>
+      <div style={{position:"relative"}}>
+        <input
+          type="text"
+          placeholder="ex. CW8.PA, BTC-EUR, AAPL, lvmh..."
+          value={value||""}
+          onChange={handleChange}
+          onFocus={()=>{ if(suggestions.length) setShowDrop(true); }}
+          onBlur={handleBlur}
+          style={{...inp, paddingRight: fetching ? "40px" : "14px"}}
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck="false"
+        />
+        {fetching && (
+          <div style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",fontSize:16,animation:"spin 0.8s linear infinite"}}>⟳</div>
+        )}
+      </div>
+      {showDrop && (
+        <div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:300,background:T.bgSolid,border:"1px solid "+T.border,borderRadius:10,boxShadow:"0 8px 32px rgba(0,0,0,.5)",overflow:"hidden",marginTop:4}}>
+          {suggestions.map((item,i) => (
+            <div key={item.t} onMouseDown={()=>applyTicker(item.t, item.n, item.cat)}
+              style={{display:"flex",alignItems:"center",gap:10,padding:"11px 14px",cursor:"pointer",borderBottom:i<suggestions.length-1?"1px solid "+T.borderSub:"none",background:T.bgInput}}
+              onMouseEnter={e=>e.currentTarget.style.background=T.bgTabAct}
+              onMouseLeave={e=>e.currentTarget.style.background=T.bgInput}
+            >
+              <span style={{fontSize:13,fontWeight:700,color:"#06b6d4",minWidth:90,fontFamily:"monospace"}}>{item.t}</span>
+              <span style={{fontSize:13,color:T.text,flex:1}}>{item.n}</span>
+              <span style={{fontSize:10,padding:"2px 7px",borderRadius:20,fontWeight:600,background:catColor(item.cat)+"22",color:catColor(item.cat)}}>{item.cat}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── HistoryPointModal ─────────────────────────────────────────────────────────
+function HistoryPointModal({ assetName, existingPoints, onClose, onSave, T }) {
+  const today = new Date().toISOString().slice(0,10);
+  const [date,  setDate]  = useState(today);
+  const [value, setValue] = useState("");
+  const inp = { background:T.bgInput, border:"1px solid "+T.border, borderRadius:8, padding:"12px 14px", color:T.text, fontSize:16, width:"100%", outline:"none" };
+
+  const handleSave = () => {
+    const v = parseFloat(value);
+    if (!date || isNaN(v) || v <= 0) { alert("Date et valeur requises."); return; }
+    onSave({ d: date, v });
+    onClose();
+  };
+
+  const handleDelete = (idx) => {
+    if (!window.confirm("Supprimer ce point ?")) return;
+    onSave(null, idx);
+  };
+
+  return (
+    <div className="modal-overlay" style={{zIndex:300}}
+      onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div className="modal-sheet" style={{background:T.bgSolid,border:"1px solid "+T.border}}>
+        <div style={{width:36,height:4,background:T.border,borderRadius:2,margin:"0 auto 20px"}}/>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+          <h2 style={{fontSize:18,fontFamily:"'Playfair Display',serif",color:T.text}}>Ajouter un point</h2>
+          <button onClick={onClose} style={{background:T.bgInput,border:"none",borderRadius:8,width:32,height:32,color:T.textDim,fontSize:18,cursor:"pointer"}}>×</button>
+        </div>
+        <p style={{fontSize:12,color:T.textMuted,marginBottom:20}}>{assetName}</p>
+
+        {existingPoints.length>0&&(
+          <div style={{marginBottom:20}}>
+            <div style={{fontSize:11,color:T.textDim,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Points enregistrés</div>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {existingPoints.map((pt,i)=>(
+                <div key={i} style={{display:"flex",alignItems:"center",gap:10,background:T.bgInput,borderRadius:8,padding:"8px 12px",border:"1px solid "+T.border}}>
+                  <span style={{fontSize:13,color:T.textSub,flex:1}}>{new Date(pt.d).toLocaleDateString("fr-FR")}</span>
+                  <span style={{fontSize:13,fontWeight:700,color:T.text}}>{fmtEur(pt.v)}</span>
+                  <button onClick={()=>handleDelete(i)} style={{background:"transparent",border:"none",color:"#f87171",cursor:"pointer",fontSize:16,padding:"2px 6px"}}>×</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div style={{marginBottom:14}}>
+          <label style={{display:"block",fontSize:11,color:T.textDim,marginBottom:6,letterSpacing:1,textTransform:"uppercase"}}>Date</label>
+          <input type="date" value={date} onChange={e=>setDate(e.target.value)} style={inp}/>
+        </div>
+        <div style={{marginBottom:24}}>
+          <label style={{display:"block",fontSize:11,color:T.textDim,marginBottom:6,letterSpacing:1,textTransform:"uppercase"}}>Valeur totale (€)</label>
+          <input type="number" min="0" placeholder="ex. 42500" value={value} onChange={e=>setValue(e.target.value)} style={inp}/>
+        </div>
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={onClose} style={{flex:1,padding:14,background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,color:T.textSub,cursor:"pointer",fontSize:15}}>Annuler</button>
+          <button onClick={handleSave} style={{flex:2,padding:14,background:"linear-gradient(135deg,#06b6d4,#0891b2)",border:"none",borderRadius:10,color:"#fff",fontWeight:700,cursor:"pointer",fontSize:15}}>
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── SyncSettingsModal ─────────────────────────────────────────────────────────
+function SyncSettingsModal({ syncConfig, onClose, onSave, onSyncNow, syncing, lastSync, T }) {
+  const [apiKey, setApiKey] = useState(syncConfig?.apiKey||"");
+  const [binId,  setBinId]  = useState(syncConfig?.binId||"");
+  const [status, setStatus] = useState("");
+  const inp = {background:T.bgInput,border:"1px solid "+T.border,borderRadius:8,padding:"10px 12px",color:T.text,fontSize:14,outline:"none",width:"100%",fontFamily:"monospace"};
+
+  const test = async () => {
+    if (!apiKey.trim()) { setStatus("Entrez une clé API"); return; }
+    setStatus("Test...");
+    try {
+      // POST un mini bin temporaire pour valider la clé — méthode la plus fiable
+      const r = await fetch("https://api.jsonbin.io/v3/b", {
+        method: "POST",
+        headers: {"Content-Type":"application/json","X-Master-Key":apiKey.trim(),"X-Bin-Name":"test-validation","X-Bin-Private":"true"},
+        body: JSON.stringify({test:true})
+      });
+      if (r.ok) {
+        const j = await r.json();
+        // Supprimer le bin de test immédiatement
+        if (j.metadata?.id) fetch(`https://api.jsonbin.io/v3/b/${j.metadata.id}`, {method:"DELETE",headers:{"X-Master-Key":apiKey.trim()}}).catch(()=>{});
+        setStatus("✓ Clé valide — connexion établie");
+      } else if (r.status === 401 || r.status === 403) {
+        setStatus("✗ Clé invalide ou non autorisée");
+      } else {
+        setStatus("✗ Erreur ("+r.status+") — vérifiez votre clé");
+      }
+    } catch { setStatus("✗ Erreur réseau"); }
+  };
+
+  const save = () => {
+    onSave({apiKey:apiKey.trim(), binId:binId.trim()||null});
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay" style={{zIndex:200}}
+      onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div className="modal-sheet" style={{background:T.bgSolid,border:"1px solid "+T.border}}>
+        <div style={{width:36,height:4,background:T.border,borderRadius:2,margin:"0 auto 20px"}}/>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+          <h2 style={{fontSize:18,fontFamily:"'Playfair Display',serif",color:T.text}}>Synchronisation & sécurité</h2>
+          <button onClick={onClose} style={{background:T.bgInput,border:"none",borderRadius:8,width:32,height:32,color:T.textDim,fontSize:18,cursor:"pointer"}}>×</button>
+        </div>
+        <p style={{fontSize:12,color:T.textMuted,marginBottom:20,lineHeight:1.6}}>
+          La synchronisation utilise <strong style={{color:T.textSub}}>JSONbin.io</strong> (gratuit).
+          Créez un compte sur <a href="https://jsonbin.io" target="_blank" style={{color:"#06b6d4"}}>jsonbin.io</a>, puis copiez votre <em>Master Key</em> ci-dessous.
+        </p>
+
+        <div style={{marginBottom:14}}>
+          <label style={{display:"block",fontSize:11,color:T.textDim,marginBottom:6,letterSpacing:1,textTransform:"uppercase"}}>Master Key (X-Master-Key)</label>
+          <input type="password" value={apiKey} onChange={e=>setApiKey(e.target.value)} placeholder="$2a$10$..." style={inp}/>
+        </div>
+        <div style={{marginBottom:8}}>
+          <label style={{display:"block",fontSize:11,color:T.textDim,marginBottom:6,letterSpacing:1,textTransform:"uppercase"}}>Bin ID (auto-détecté — partagez-le entre vos appareils si besoin)</label>
+          <div style={{display:"flex",gap:8,alignItems:"center"}}>
+            <input type="text" value={binId} onChange={e=>setBinId(e.target.value)}
+              placeholder="Laissez vide — détecté automatiquement via votre clé"
+              style={{...inp,fontFamily:"monospace",flex:1}}/>
+            {binId&&<button onClick={()=>{navigator.clipboard?.writeText(binId);setStatus("✓ Bin ID copié !");}}
+              style={{padding:"10px 12px",background:T.bgInput,border:"1px solid "+T.border,borderRadius:8,color:T.textSub,cursor:"pointer",fontSize:12,whiteSpace:"nowrap"}}>
+              📋 Copier
+            </button>}
+          </div>
+          <p style={{fontSize:11,color:T.textMuted,marginTop:4,lineHeight:1.5}}>
+            La clé API suffit pour synchroniser automatiquement — le Bin ID est découvert seul.
+            Si ça ne fonctionne pas, copiez le Bin ID depuis l'appareil principal et collez-le ici.
+          </p>
+        </div>
+        {status&&<p style={{fontSize:12,color:status.startsWith("✓")?"#34d399":"#f87171",marginBottom:12}}>{status}</p>}
+        {lastSync&&<p style={{fontSize:11,color:T.textMuted,marginBottom:12}}>Dernière sync : {lastSync.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</p>}
+
+        <div style={{background:T.bgDeep,borderRadius:10,padding:"12px 16px",marginBottom:20,border:"1px solid "+T.border}}>
+          <div style={{fontSize:11,color:T.textMuted,fontWeight:600,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Comment obtenir votre Master Key</div>
+          <ol style={{fontSize:12,color:T.textSub,paddingLeft:16,lineHeight:2,margin:0}}>
+            <li>Créez un compte gratuit sur <a href="https://jsonbin.io" target="_blank" style={{color:"#06b6d4"}}>jsonbin.io</a></li>
+            <li>Cliquez sur votre avatar → <strong>API Keys</strong></li>
+            <li>Copiez la <strong>Master Key</strong> (commence par $2a$10$…)</li>
+            <li>Collez-la ci-dessus, sauvegardez, puis cliquez Synchroniser</li>
+          </ol>
+        </div>
+
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          <button onClick={test} style={{flex:1,padding:12,background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,color:T.textSub,cursor:"pointer",fontSize:13}}>Tester la clé</button>
+          <button onClick={()=>{save();}} style={{flex:1,padding:12,background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,color:T.textSub,cursor:"pointer",fontSize:13}}>Sauvegarder</button>
+          <button onClick={()=>{save();onSyncNow();}} disabled={!apiKey.trim()||syncing}
+            style={{flex:2,padding:12,background:"linear-gradient(135deg,#06b6d4,#0891b2)",border:"none",borderRadius:10,color:"#fff",fontWeight:700,cursor:(!apiKey.trim()||syncing)?"not-allowed":"pointer",fontSize:13,opacity:(!apiKey.trim()||syncing)?0.5:1}}>
+            {syncing?"Synchronisation...":"↑↓ Synchroniser maintenant"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── AccountManagerModal ───────────────────────────────────────────────────────
+function AccountManagerModal({ accounts, onClose, onSave, T }) {
+  const [editing,  setEditing]  = useState(null);
+  const [editName, setEditName] = useState("");
+  const [newName,  setNewName]  = useState("");
+  const inp = { background:T.bgInput, border:"1px solid "+T.border, borderRadius:8, padding:"10px 12px", color:T.text, fontSize:14, outline:"none", width:"100%" };
+
+  const createAccount = () => {
+    const name = newName.trim();
+    if (!name) return;
+    const color = ACCOUNT_COLORS[accounts.length % ACCOUNT_COLORS.length];
+    onSave([...accounts, { id:Date.now(), name, color }]);
+    setNewName("");
+  };
+  const renameAccount = (id) => {
+    const name = editName.trim();
+    if (!name) return;
+    onSave(accounts.map(a => a.id===id ? {...a,name} : a));
+    setEditing(null);
+  };
+  const deleteAccount = (id) => {
+    if (!window.confirm("Supprimer ce compte ? Les investissements associés ne seront pas supprimés.")) return;
+    onSave(accounts.filter(a => a.id!==id));
+  };
+
+  return (
+    <div className="modal-overlay" style={{zIndex:200}}
+      onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div className="modal-sheet" style={{background:T.bgSolid,border:"1px solid "+T.border}}>
+        <div style={{width:36,height:4,background:T.border,borderRadius:2,margin:"0 auto 20px"}}/>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+          <h2 style={{fontSize:20,fontFamily:"'Playfair Display',serif",color:T.text}}>Gérer les comptes</h2>
+          <button onClick={onClose} style={{background:T.bgInput,border:"none",borderRadius:8,width:32,height:32,color:T.textDim,fontSize:18,cursor:"pointer"}}>×</button>
+        </div>
+        {accounts.length===0&&<p style={{fontSize:13,color:T.textMuted,marginBottom:16}}>Aucun compte créé. Ajoutez-en un pour regrouper vos investissements.</p>}
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:20}}>
+          {accounts.map(acc=>(
+            <div key={acc.id} style={{display:"flex",alignItems:"center",gap:10,background:T.bgInput,borderRadius:10,padding:"10px 14px",border:"1px solid "+T.border}}>
+              <div style={{width:10,height:10,borderRadius:"50%",background:acc.color,flexShrink:0}}/>
+              {editing===acc.id ? (
+                <>
+                  <input value={editName} onChange={e=>setEditName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&renameAccount(acc.id)} autoFocus
+                    style={{...inp,flex:1,padding:"6px 10px"}}/>
+                  <button onClick={()=>renameAccount(acc.id)} style={{background:"#06b6d422",border:"1px solid #06b6d4",borderRadius:6,padding:"5px 12px",color:"#06b6d4",cursor:"pointer",fontSize:12,fontWeight:700}}>OK</button>
+                  <button onClick={()=>setEditing(null)} style={{background:"transparent",border:"none",color:T.textDim,cursor:"pointer",fontSize:16,padding:"4px 6px"}}>✕</button>
+                </>
+              ) : (
+                <>
+                  <span style={{flex:1,fontSize:14,fontWeight:600,color:T.text}}>{acc.name}</span>
+                  <button onClick={()=>{setEditing(acc.id);setEditName(acc.name);}}
+                    style={{background:"transparent",border:"1px solid "+T.border,borderRadius:6,padding:"4px 10px",color:T.textSub,cursor:"pointer",fontSize:11}}>Renommer</button>
+                  <button onClick={()=>deleteAccount(acc.id)}
+                    style={{background:"transparent",border:"1px solid #f8717140",borderRadius:6,padding:"4px 10px",color:"#f87171",cursor:"pointer",fontSize:11}}>Suppr.</button>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:8}}>
+          <input value={newName} onChange={e=>setNewName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&createAccount()}
+            placeholder="Nom du nouveau compte..." style={{...inp,flex:1}}/>
+          <button onClick={createAccount}
+            style={{padding:"10px 18px",background:"linear-gradient(135deg,#06b6d4,#0891b2)",border:"none",borderRadius:10,color:"#fff",fontWeight:700,cursor:"pointer",fontSize:14,flexShrink:0}}>
+            Créer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function Modal({ onClose, onSave, initial, accounts, T }) {
+  const blank = { name:"", ticker:"", category:"ETF", accountId:null, quantity:"", buyPrice:"", date:new Date().toISOString().slice(0,10), currentPrice:"", notes:"" };
+  const [form,         setForm]        = useState(initial||blank);
+  const [priceStatus,  setPriceStatus] = useState(initial?.ticker ? "idle" : "idle");
+  const set = (k)=>(e)=>setForm(f=>({...f,[k]:e.target.value}));
+  const inp = { background:T.bgInput, border:"1px solid "+T.border, borderRadius:8, padding:"12px 14px", color:T.text, fontSize:16, width:"100%", outline:"none" };
+
+  // Appelé quand le nom est trouvé via le ticker
+  const handleNameFetched = (name) => {
+    setForm(f => ({ ...f, name: f.name || name }));
+  };
+
+  // Appelé par TickerInput quand la catégorie est détectée
+  const handleCategoryFetched = (cat) => {
+    setForm(f => ({ ...f, category: cat }));
+  };
+
+  // Appelé par TickerInput quand le prix est récupéré
+  const handlePriceFetched = (price) => {
+    setForm(f => ({
+      ...f,
+      currentPrice: String(price),
+      buyPrice: f.buyPrice || String(price),
+    }));
+    setPriceStatus("ok");
+  };
+
+  return (
+    <div className="modal-overlay" style={{zIndex:200}}
+      onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div className="modal-sheet" style={{background:T.bgSolid,border:"1px solid "+T.border}}>
+        <div style={{width:36,height:4,background:T.border,borderRadius:2,margin:"0 auto 20px"}}/>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+          <h2 style={{fontSize:20,fontFamily:"'Playfair Display',serif",color:T.text}}>{initial?"Modifier":"Nouvel investissement"}</h2>
+          <button onClick={onClose} style={{background:T.bgInput,border:"none",borderRadius:8,width:32,height:32,color:T.textDim,fontSize:18,cursor:"pointer"}}>x</button>
+        </div>
+
+        {/* Ticker en premier — déclenche le fetch du prix */}
+        <div style={{marginBottom:14}}>
+          <label style={{display:"block",fontSize:11,color:T.textDim,marginBottom:6,letterSpacing:1,textTransform:"uppercase"}}>
+            Ticker
+            {priceStatus==="ok" && <span style={{color:"#34d399",marginLeft:8,fontWeight:600,textTransform:"none"}}>✓ Prix recupere</span>}
+          </label>
+          <TickerInput
+            value={form.ticker||""}
+            onChange={v=>setForm(f=>({...f,ticker:v}))}
+            onPriceFetched={handlePriceFetched}
+            onNameFetched={handleNameFetched}
+            onCategoryFetched={handleCategoryFetched}
+            T={T}
+          />
+          <div style={{fontSize:11,color:T.textMuted,marginTop:5}}>
+            Selectionnez un ticker — le prix actuel se remplit automatiquement
+          </div>
+        </div>
+
+        {[["Nom","name","text","ex. PEA Amundi MSCI World"],
+          ["Quantite","quantity","number","ex. 10"],
+          ["Prix achat (EUR)","buyPrice","number","ex. 420"],
+          ["Date achat","date","date",""]
+        ].map(([lbl,k,t,ph])=>(
+          <div key={k} style={{marginBottom:14}}>
+            <label style={{display:"block",fontSize:11,color:T.textDim,marginBottom:6,letterSpacing:1,textTransform:"uppercase"}}>{lbl}</label>
+            <input type={t} placeholder={ph} value={form[k]} onChange={set(k)} style={{...inp, ...(t==="date"?{width:"100%",maxWidth:"100%",minWidth:0,boxSizing:"border-box"}:{})}}/>
+          </div>
+        ))}
+
+        {/* Prix actuel — lecture seule, rempli automatiquement */}
+        <div style={{marginBottom:14}}>
+          <label style={{display:"block",fontSize:11,color:T.textDim,marginBottom:6,letterSpacing:1,textTransform:"uppercase"}}>
+            Prix actuel (EUR)
+            {priceStatus==="ok"
+              ? <span style={{color:"#34d399",marginLeft:6,fontWeight:600,textTransform:"none",fontSize:10}}>✓ mis a jour automatiquement</span>
+              : <span style={{color:T.textFaint,marginLeft:6,fontWeight:400,textTransform:"none",fontSize:10}}>rempli automatiquement via ticker</span>
+            }
+          </label>
+          <div style={{
+            ...inp,
+            borderColor: priceStatus==="ok" ? "#34d399" : T.border,
+            background: T.bgDeep,
+            color: form.currentPrice ? T.text : T.textFaint,
+            cursor: "not-allowed",
+            userSelect: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}>
+            <span style={{flex:1, fontSize:16}}>
+              {form.currentPrice ? parseFloat(form.currentPrice).toLocaleString("fr-FR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " €" : "— en attente du ticker —"}
+            </span>
+            {priceStatus==="ok" && <span style={{fontSize:14}}>✓</span>}
+          </div>
+        </div>
+
+        <div style={{marginBottom:14}}>
+          <label style={{display:"block",fontSize:11,color:T.textDim,marginBottom:6,letterSpacing:1,textTransform:"uppercase"}}>Categorie</label>
+          <select value={form.category} onChange={set("category")} style={{...inp,appearance:"none"}}>
+            {CATEGORIES.map(c=><option key={c}>{c}</option>)}
+          </select>
+        </div>
+        {accounts.length>0&&(
+          <div style={{marginBottom:14}}>
+            <label style={{display:"block",fontSize:11,color:T.textDim,marginBottom:6,letterSpacing:1,textTransform:"uppercase"}}>Compte</label>
+            <select value={form.accountId?String(form.accountId):""} onChange={e=>setForm(f=>({...f,accountId:e.target.value?Number(e.target.value):null}))} style={{...inp,appearance:"none"}}>
+              <option value="">— Non classé —</option>
+              {accounts.map(a=>(
+                <option key={a.id} value={String(a.id)}>{a.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+        <div style={{marginBottom:24}}>
+          <label style={{display:"block",fontSize:11,color:T.textDim,marginBottom:6,letterSpacing:1,textTransform:"uppercase"}}>Notes</label>
+          <textarea value={form.notes} onChange={set("notes")} rows={2} style={{...inp,resize:"none"}}/>
+        </div>
+
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={onClose} style={{flex:1,padding:14,background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,color:T.textSub,cursor:"pointer",fontSize:15}}>Annuler</button>
+          <button onClick={()=>{
+            if(!form.name||!form.quantity||!form.buyPrice){alert("Champs obligatoires manquants.");return;}
+            onSave({...form,id:initial?.id||Date.now(),quantity:parseFloat(form.quantity),buyPrice:parseFloat(form.buyPrice),currentPrice:parseFloat(form.currentPrice)||parseFloat(form.buyPrice),ticker:(form.ticker||"").trim()});
+            onClose();
+          }} style={{flex:2,padding:14,background:"linear-gradient(135deg,#06b6d4,#0891b2)",border:"none",borderRadius:10,color:"#fff",fontWeight:700,cursor:"pointer",fontSize:15}}>
+            {initial?"Mettre a jour":"Ajouter"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
+function App() {
+  const [investments,  setInvestments]  = useState([]);
+  const [accounts,     setAccounts]     = useState([]);
+  const [histUserData, setHistUserData] = useState({});
+  const [ready,        setReady]        = useState(false);
+  const [syncConfig,   setSyncConfig]   = useState(null);
+  const [syncing,      setSyncing]      = useState(false);
+  const [lastSync,     setLastSync]     = useState(null);
+  const [syncModal,    setSyncModal]    = useState(false);
+  const [addMenu,      setAddMenu]      = useState(false);
+  const [modal,        setModal]        = useState(null);
+  const [accountModal, setAccountModal] = useState(false);
+  const [histPointModal,setHistPointModal] = useState(null); // asset name or null
+  const [filter,       setFilter]       = useState("Tous");
+  const [sort,         setSort]         = useState("value");
+  const [search,       setSearch]       = useState("");
+  const [tab,          setTab]          = useState("portfolio");
+  const [privacy,      setPrivacy]      = useState(false);
+  const [refreshing,   setRefreshing]   = useState(false);
+  const [priceStatus,  setPriceStatus]  = useState({});
+  const [lastRefresh,  setLastRefresh]  = useState(null);
+  const [dark,         setDark]         = useState("dark"); // "dark" | "black" | "light"
+  // Indices actives dans les comparaisons (tous par defaut)
+  const [activeIdx,    setActiveIdx]    = useState(["SP500"]);
+  const [interval,     setInterval]     = useState("MAX");
+  // Ref toujours à jour vers syncConfig (évite les closures stale dans les timers)
+  const syncConfigRef = React.useRef(syncConfig);
+  syncConfigRef.current = syncConfig;
+  const [indexHistData,     setIndexHistData]     = useState({});
+  const [indexHistLoading,  setIndexHistLoading]  = useState(false);
+  const [portfolioHistData, setPortfolioHistData] = useState({});
+  const [portfolioHistLoading,setPortfolioHistLoading]=useState(false);
+  const [donutDetailed,setDonutDetailed]= useState(false);
+
+  const T = dark === "light" ? LIGHT : dark === "black" ? BLACK : DARK;
+  const cycleTheme = () => setDark(d => THEMES[(THEMES.indexOf(d) + 1) % THEMES.length]);
+  const M = (v) => privacy ? HIDDEN : fmtEur(v);
+
+  const toggleIdx = (key) => setActiveIdx(prev =>
+    prev.includes(key) ? prev.filter(k=>k!==key) : [...prev,key]
+  );
+
+  useEffect(()=>{
+    try {
+      const s = localStorage.getItem(STORAGE_KEY);
+      if (s) { setInvestments(JSON.parse(s)); setReady(true); }
+      else {
+        const old = localStorage.getItem("investments-data-v2");
+        if (old) { setInvestments(JSON.parse(old).map(i=>({...i,ticker:i.ticker||""}))); setReady(true); }
+        else { setInvestments(PRELOADED); setReady(true); }
+      }
+    } catch(e) { setInvestments(PRELOADED); setReady(true); }
+    try { const acc = localStorage.getItem(ACCOUNTS_KEY); if (acc) setAccounts(JSON.parse(acc)); } catch(e) {}
+    try { const h = localStorage.getItem(HIST_KEY); if (h) setHistUserData(JSON.parse(h)); } catch(e) {}
+    try { const sc = localStorage.getItem(SYNC_KEY); if (sc) setSyncConfig(JSON.parse(sc)); } catch(e) {}
+  },[]);
+
+  // Sync cloud au chargement (pull initial + découverte auto du binId si absent)
+  useEffect(()=>{
+    if (syncConfig?.apiKey) doCloudPull(syncConfig);
+  },[]);
+
+  // Auto-pull quand l'utilisateur revient sur l'onglet ou focus la fenêtre
+  useEffect(()=>{
+    const pull = () => {
+      const cfg = syncConfigRef.current;
+      if (!cfg?.apiKey || !cfg?.binId || syncing) return;
+      doCloudPull(cfg);
+    };
+    const onVis = () => { if (document.visibilityState === 'visible') pull(); };
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('focus', pull);
+    return () => {
+      document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('focus', pull);
+    };
+  },[]);
+
+  // Auto-pull toutes les 5 minutes (polling léger)
+  useEffect(()=>{
+    if (!syncConfig?.apiKey) return;
+    const id = setInterval(()=> {
+      if (!syncing) doCloudPull(syncConfigRef.current);
+    }, 5 * 60 * 1000);
+    return () => clearInterval(id);
+  },[syncConfig?.apiKey]);
+
+  // useEffect 1 : fetch hebdomadaire des INDICES (se relance si période/sélection change)
+  useEffect(()=>{
+    if (tab !== 'history') return;
+    let cancelled = false;
+    setIndexHistLoading(true);
+    setIndexHistData({});
+    const range = intervalToYahooRange(interval);
+    Promise.all(
+      activeIdx.map(async key => {
+        const ticker = YAHOO_IDX_TICKERS[key];
+        if (!ticker) return [key, null];
+        const data = await fetchWeeklyHistory(ticker, range);
+        return [key, data];
+      })
+    ).then(results => {
+      if (cancelled) return;
+      const nd = {};
+      results.forEach(([k,d]) => { if (d) nd[k]=d; });
+      setIndexHistData(nd);
+      setIndexHistLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [tab, interval, activeIdx.join(',')]);
+
+  // useEffect 2 : fetch cours historiques de chaque actif du portefeuille (MAX, 1 seule fois)
+  useEffect(()=>{
+    if (tab !== 'history' || !investments.length) return;
+    const tickers = [...new Set(investments.map(inv => inv.ticker?.trim()).filter(Boolean))];
+    const missing  = tickers.filter(t => !portfolioHistData[t]);
+    if (!missing.length) return;
+    let cancelled = false;
+    setPortfolioHistLoading(true);
+    Promise.all(missing.map(async ticker => {
+      const data = await fetchTickerWeeklyHistory(ticker);
+      return [ticker, data];
+    })).then(results => {
+      if (cancelled) return;
+      const nd = {...portfolioHistData};
+      results.forEach(([t,d]) => { if (d) nd[t]=d; });
+      setPortfolioHistData(nd);
+      setPortfolioHistLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [tab, investments.length]);
+
+  const doCloudPull = async (cfg) => {
+    if (!cfg?.apiKey) return;
+    setSyncing(true);
+    let effectiveBinId = cfg.binId;
+    // Pas de binId ? Découverte automatique du bin existant sur JSONbin.io
+    if (!effectiveBinId) {
+      effectiveBinId = await cloudDiscover(cfg.apiKey);
+      if (effectiveBinId) {
+        const updated = {...cfg, binId: effectiveBinId};
+        setSyncConfig(updated);
+        try { localStorage.setItem(SYNC_KEY, JSON.stringify(updated)); } catch(e){}
+      }
+    }
+    if (!effectiveBinId) { setSyncing(false); return; }
+    try {
+      const remote = await cloudPull(cfg.apiKey, effectiveBinId);
+      if (remote?.investments) {
+        setInvestments(remote.investments);
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(remote.investments)); } catch(e){}
+      }
+      if (remote?.accounts) {
+        setAccounts(remote.accounts);
+        try { localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(remote.accounts)); } catch(e){}
+      }
+      if (remote?.histUserData) {
+        setHistUserData(remote.histUserData);
+        try { localStorage.setItem(HIST_KEY, JSON.stringify(remote.histUserData)); } catch(e){}
+      }
+      setLastSync(new Date());
+    } catch(e) { console.warn("Pull failed", e); }
+    setSyncing(false);
+  };
+
+  const doCloudPush = useCallback(async (cfg, inv, acc, hist) => {
+    if (!cfg?.apiKey) return;
+    try {
+      const payload = { investments:inv, accounts:acc, histUserData:hist, updatedAt:new Date().toISOString() };
+      const newBinId = await cloudPush(cfg.apiKey, cfg.binId||null, payload);
+      if (newBinId !== cfg.binId) {
+        const updated = {...cfg, binId:newBinId};
+        setSyncConfig(updated);
+        try { localStorage.setItem(SYNC_KEY, JSON.stringify(updated)); } catch(e){}
+      }
+      setLastSync(new Date());
+    } catch(e) { console.warn("Push failed", e); }
+  }, []);
+
+  const persist = (list) => {
+    setInvestments(list);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch(e) {}
+    doCloudPush(syncConfig, list, accounts, histUserData);
+  };
+  const persistAccounts = (list) => {
+    setAccounts(list);
+    try { localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(list)); } catch(e) {}
+    doCloudPush(syncConfig, investments, list, histUserData);
+  };
+  const persistHist = (data) => {
+    setHistUserData(data);
+    try { localStorage.setItem(HIST_KEY, JSON.stringify(data)); } catch(e) {}
+    doCloudPush(syncConfig, investments, accounts, data);
+  };
+
+  const exportToExcel = useCallback(() => {
+    const XLS = window.XLSX;
+    if (!XLS) { alert("SheetJS non disponible."); return; }
+
+    const wb = XLS.utils.book_new();
+    const fmt = (d) => new Date(d).toLocaleDateString("fr-FR");
+    const accName = (id) => id ? (accounts.find(a=>a.id===id)?.name||"Non classé") : "Non classé";
+
+    // ── Feuille 1 : Portefeuille ──────────────────────────────────────────────
+    const header1 = ["Nom","Ticker","Catégorie","Compte","Quantité","Prix achat (€)","Valeur achat (€)","Prix actuel (€)","Valeur actuelle (€)","P&L (€)","Performance (%)","Date achat","Notes"];
+    const rows1 = investments.map(inv => {
+      const vAchat  = inv.buyPrice * inv.quantity;
+      const vActuel = inv.currentPrice * inv.quantity;
+      const pl      = vActuel - vAchat;
+      const perf    = vAchat ? ((vActuel - vAchat) / vAchat) * 100 : 0;
+      return [
+        inv.name, inv.ticker||"", inv.category, accName(inv.accountId),
+        inv.quantity, inv.buyPrice, vAchat,
+        inv.currentPrice, vActuel, pl,
+        Math.round(perf * 10) / 10,
+        fmt(inv.date), inv.notes||""
+      ];
+    });
+    const ws1 = XLS.utils.aoa_to_sheet([header1, ...rows1]);
+    // Totaux
+    const n1 = rows1.length;
+    const totInvested = investments.reduce((s,i)=>s+i.buyPrice*i.quantity, 0);
+    const totCurrent  = investments.reduce((s,i)=>s+i.currentPrice*i.quantity, 0);
+    const totPL       = totCurrent - totInvested;
+    const totPerf     = totInvested ? ((totCurrent-totInvested)/totInvested)*100 : 0;
+    ws1["!data"] = ws1["!data"] || [];
+    XLS.utils.sheet_add_aoa(ws1, [
+      [],
+      ["TOTAL","","","", "", "", totInvested, "", totCurrent, totPL, Math.round(totPerf*10)/10]
+    ], { origin: n1 + 2 });
+    ws1["!cols"] = [22,10,12,16,9,14,16,14,18,12,16,12,28].map(w=>({wch:w}));
+    XLS.utils.book_append_sheet(wb, ws1, "Portefeuille");
+
+    // ── Feuille 2 : Résumé par compte ─────────────────────────────────────────
+    const header2 = ["Compte","Nb positions","Valeur investie (€)","Valeur actuelle (€)","P&L (€)","Performance (%)"];
+    const groups = accounts.length > 0
+      ? [
+          ...accounts.map(acc => {
+            const invs = investments.filter(i=>i.accountId===acc.id);
+            const vi = invs.reduce((s,i)=>s+i.buyPrice*i.quantity,0);
+            const va = invs.reduce((s,i)=>s+i.currentPrice*i.quantity,0);
+            return [acc.name, invs.length, vi, va, va-vi, vi ? Math.round(((va-vi)/vi)*10000)/100 : 0];
+          }),
+          (()=>{
+            const invs = investments.filter(i=>!i.accountId||!accounts.find(a=>a.id===i.accountId));
+            const vi = invs.reduce((s,i)=>s+i.buyPrice*i.quantity,0);
+            const va = invs.reduce((s,i)=>s+i.currentPrice*i.quantity,0);
+            return ["Non classé", invs.length, vi, va, va-vi, vi ? Math.round(((va-vi)/vi)*10000)/100 : 0];
+          })()
+        ]
+      : [["(aucun compte créé)", investments.length, totInvested, totCurrent, totPL, Math.round(totPerf*10)/10]];
+    const ws2 = XLS.utils.aoa_to_sheet([header2, ...groups]);
+    ws2["!cols"] = [20,14,20,20,14,16].map(w=>({wch:w}));
+    XLS.utils.book_append_sheet(wb, ws2, "Résumé comptes");
+
+    // ── Feuille 3 : Historique par compte (1er et 15 de chaque mois) ──────────
+    const N_HD = HIST_DATES.length;
+
+    // Série de valeur alignée sur HIST_DATES pour un investissement
+    const getSeriesExport = (inv) => {
+      if (HISTORY[inv.name]) {
+        const s = HISTORY[inv.name];
+        const pad = N_HD - s.length;
+        return pad > 0 ? [...Array(pad).fill(0), ...s] : s;
+      }
+      const buyDate = new Date(inv.date);
+      let startIdx = N_HD - 1;
+      for (let i = 0; i < N_HD; i++) {
+        if (HIST_DATES[i] >= buyDate) { startIdx = i; break; }
+      }
+      const buyVal = inv.buyPrice * inv.quantity;
+      const curVal = inv.currentPrice * inv.quantity;
+      const span = N_HD - startIdx;
+      return Array.from({length: N_HD}, (_, i) => {
+        if (i < startIdx) return 0;
+        const t = span <= 1 ? 1 : (i - startIdx) / (span - 1);
+        return Math.round((buyVal + (curVal - buyVal) * t) * 100) / 100;
+      });
+    };
+
+    // Interpoler la valeur d'un tableau de series (summed) pour une date cible
+    const interpValue = (summedSeries, targetDate) => {
+      // Trouver les deux points HIST_DATES encadrant la date cible
+      let lo = -1, hi = -1;
+      for (let i = 0; i < N_HD; i++) {
+        if (HIST_DATES[i] <= targetDate) lo = i;
+        if (HIST_DATES[i] >= targetDate && hi === -1) hi = i;
+      }
+      if (lo < 0 && hi < 0) return 0;
+      if (lo < 0) return summedSeries[hi];
+      if (hi < 0 || lo === hi) return summedSeries[lo];
+      const span = HIST_DATES[hi] - HIST_DATES[lo];
+      if (span === 0) return summedSeries[lo];
+      const t = (targetDate - HIST_DATES[lo]) / span;
+      return Math.round((summedSeries[lo] + (summedSeries[hi] - summedSeries[lo]) * t));
+    };
+
+    // Construire la série totale et par compte
+    const buildSummedSeries = (invs) => {
+      if (!invs.length) return Array(N_HD).fill(0);
+      const series = invs.map(getSeriesExport);
+      return Array.from({length: N_HD}, (_, i) => series.reduce((s, arr) => s + (arr[i] || 0), 0));
+    };
+
+    const totalSeries = buildSummedSeries(investments);
+    const accountSeries = accounts.map(acc => ({
+      name: acc.name,
+      series: buildSummedSeries(investments.filter(i => i.accountId === acc.id)),
+    }));
+    const unclassedInvs = investments.filter(i => !i.accountId || !accounts.find(a => a.id === i.accountId));
+    if (unclassedInvs.length > 0) {
+      accountSeries.push({ name: "Non classé", series: buildSummedSeries(unclassedInvs) });
+    }
+
+    // Générer toutes les dates 1er et 15 depuis la date du 1er investissement jusqu'à aujourd'hui
+    const firstDate = investments.reduce((min, inv) => {
+      const d = new Date(inv.date);
+      return d < min ? d : min;
+    }, new Date());
+    firstDate.setDate(1);
+
+    const today = new Date();
+    const biDates = [];
+    const cur = new Date(firstDate);
+    while (cur <= today) {
+      biDates.push(new Date(cur));
+      if (cur.getDate() === 1) cur.setDate(15);
+      else { cur.setMonth(cur.getMonth() + 1); cur.setDate(1); }
+    }
+
+    const accNames = accountSeries.map(a => a.name);
+    const header3 = ["Date", ...accNames, "Total"];
+    const histRows3 = biDates.map(d => {
+      const dateStr = d.toLocaleDateString("fr-FR");
+      const accVals = accountSeries.map(a => interpValue(a.series, d) || "");
+      const total = interpValue(totalSeries, d) || "";
+      return [dateStr, ...accVals, total];
+    });
+
+    const ws3 = XLS.utils.aoa_to_sheet([header3, ...histRows3]);
+    ws3["!cols"] = [12, ...accNames.map(() => 18), 14].map(w => ({wch: w}));
+    XLS.utils.book_append_sheet(wb, ws3, "Historique");
+
+    // ── Téléchargement ────────────────────────────────────────────────────────
+    const date = new Date().toISOString().slice(0,10);
+    XLS.writeFile(wb, `portfolio_${date}.xlsx`);
+  }, [investments, accounts, histUserData]);
+
+  // Fusionner l'historique statique + points utilisateur pour un actif
+  const getAssetHistory = useCallback((name) => {
+    const staticPts = (HISTORY[name] || []).map((v, i) => ({
+      d: HIST_DATES[Math.min(i, HIST_DATES.length-1)],
+      v,
+    }));
+    const extra = (histUserData[name]?.extra || []).map(p => ({
+      d: new Date(p.d),
+      v: p.v,
+    }));
+    const merged = [...staticPts, ...extra].sort((a, b) => a.d - b.d);
+    // Dédupliquer : si deux points à ±1 jour, garder le dernier (point user)
+    const deduped = [];
+    for (const pt of merged) {
+      const last = deduped[deduped.length-1];
+      if (last && Math.abs(last.d - pt.d) < 86400000 * 2) {
+        deduped[deduped.length-1] = pt;
+      } else {
+        deduped.push(pt);
+      }
+    }
+    return { dates: deduped.map(p=>p.d), vals: deduped.map(p=>p.v) };
+  }, [histUserData]);
+  const addOrUpdate = (inv) => persist(investments.find(i=>i.id===inv.id)?investments.map(i=>i.id===inv.id?inv:i):[...investments,inv]);
+  const remove      = (id)  => persist(investments.filter(i=>i.id!==id));
+
+  const refreshPrices = useCallback(async () => {
+    const toUpdate = investments.filter(i => i.ticker && i.ticker.trim());
+    if (!toUpdate.length) { alert("Aucun ticker renseigne. Modifiez vos investissements pour ajouter un ticker."); return; }
+    setRefreshing(true);
+
+    const statusMap = {};
+    toUpdate.forEach(inv => { statusMap[inv.id] = "loading"; });
+    setPriceStatus({...statusMap});
+
+    // Utilise fetchAllPrices avec les 3 sources
+    const results = await fetchAllPrices(
+      toUpdate,
+      (id, state) => { statusMap[id] = state; setPriceStatus({...statusMap}); }
+    );
+
+    // Appliquer les prix récupérés au state React + localStorage
+    const nbOk = Object.values(results).filter(r => r.ok).length;
+    if (nbOk > 0) {
+      setInvestments(prev => {
+        const next = prev.map(inv => {
+          const r = results[inv.id];
+          return (r?.ok && r.price > 0)
+            ? { ...inv, currentPrice: Math.round(r.price * 100) / 100 }
+            : inv;
+        });
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch(e) {}
+        return next;
+      });
+    }
+
+    setRefreshing(false);
+    setLastRefresh(new Date());
+    alert(nbOk + " prix mis a jour sur " + toUpdate.length + " tickers." +
+      (nbOk < toUpdate.length ? "\n\nEchecs : " + toUpdate.filter(i => !results[i.id]?.ok).map(i => i.ticker).join(", ") : ""));
+  }, [investments]);
+
+  const filtered = investments
+    .filter(i=>filter==="Tous"||i.category===filter)
+    .filter(i=>i.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a,b)=>{
+      if(sort==="date")  return new Date(b.date)-new Date(a.date);
+      if(sort==="value") return b.currentPrice*b.quantity-a.currentPrice*a.quantity;
+      if(sort==="perf")  return pct(b.currentPrice,b.buyPrice)-pct(a.currentPrice,a.buyPrice);
+      return 0;
+    });
+
+  const totalInvested = investments.reduce((s,i)=>s+i.buyPrice*i.quantity,0);
+  const totalCurrent  = investments.reduce((s,i)=>s+i.currentPrice*i.quantity,0);
+  const totalGain     = totalCurrent-totalInvested;
+  const totalPct      = pct(totalCurrent,totalInvested);
+  const donutData     = CATEGORIES.map(cat=>({label:cat,color:CAT_COLORS[cat],value:investments.filter(i=>i.category===cat).reduce((s,i)=>s+i.currentPrice*i.quantity,0)})).filter(d=>d.value>0);
+  const tickerCount   = investments.filter(i=>i.ticker&&i.ticker.trim()).length;
+
+  if (!ready) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",background:"#07111a",color:"#9ab0c8"}}>Chargement...</div>;
+
+  const card = {background:T.bgCard,border:"1px solid "+T.border,borderRadius:14};
+
+  return (
+    <div style={{minHeight:"100vh",background:T.bg,color:T.text,fontFamily:"'DM Sans',sans-serif"}}>
+
+      {/* ═══ HEADER ═══ */}
+      <div style={{background:T.bgHeader,borderBottom:"1px solid "+T.border,padding:"16px max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left))",paddingTop:"calc(16px + env(safe-area-inset-top))"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+          <div>
+            <h1 style={{fontSize:18,fontFamily:"'Syne',sans-serif",fontWeight:800,background:"linear-gradient(135deg,#06b6d4,#0891b2)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",letterSpacing:"-0.5px"}}>Mon Portfolio</h1>
+            <p style={{fontSize:11,color:T.textMuted,marginTop:2}}>
+              {syncing
+                ? <span style={{color:"#06b6d4"}}>↑↓ Synchronisation...</span>
+                : lastSync
+                  ? "Sync "+lastSync.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})
+                  : "Données locales"}
+              {privacy&&<span style={{color:"#38bdf8",fontWeight:600,marginLeft:8}}>· Mode discret</span>}
+            </p>
+          </div>
+          <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+            <button onClick={refreshPrices} disabled={refreshing} title={refreshing?"En cours...":"Actualiser les prix ("+tickerCount+")"}
+              style={{display:"flex",alignItems:"center",justifyContent:"center",width:38,height:38,borderRadius:10,border:"1px solid",cursor:refreshing?"not-allowed":"pointer",flexShrink:0,borderColor:refreshing?T.border:"#06b6d4",background:refreshing?T.bgDeep:"#06b6d422"}}>
+              <span style={{display:"inline-block",animation:refreshing?"spin 1s linear infinite":"none",fontSize:16,color:refreshing?T.textDim:"#06b6d4",lineHeight:1}}>↻</span>
+            </button>
+            {/* Bouton mode discret — icône oeil SVG flat */}
+            <button onClick={()=>setPrivacy(p=>!p)}
+              title={privacy?"Afficher les montants":"Masquer les montants"}
+              style={{display:"flex",alignItems:"center",justifyContent:"center",width:38,height:38,borderRadius:10,border:"1px solid",cursor:"pointer",flexShrink:0,
+                background: privacy?"#0f2040":"transparent",
+                borderColor: privacy?"#38bdf8":T.border,
+              }}>
+              {privacy ? (
+                // Oeil barré — montants masqués
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              ) : (
+                // Oeil ouvert — montants visibles
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.textDim} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              )}
+            </button>
+
+            {/* Bouton thème — cycle Nuit → Noir → Jour */}
+            <button onClick={cycleTheme}
+              title={dark==="dark"?"Passer en noir OLED":dark==="black"?"Passer en mode jour":"Passer en mode nuit"}
+              style={{display:"flex",alignItems:"center",justifyContent:"center",width:38,height:38,borderRadius:10,border:"1px solid "+T.border,cursor:"pointer",background:T.bgInput,flexShrink:0}}>
+              {dark === "light" ? (
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={T.textSub} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+              ) : dark === "dark" ? (
+                <svg width="17" height="17" viewBox="0 0 24 24" fill={T.textSub} stroke={T.textSub} strokeWidth="1.5">
+                  <circle cx="12" cy="12" r="9"/>
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.textSub} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5"/>
+                  <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                  <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+              )}
+            </button>
+            <button
+              onClick={()=>{ if(syncConfig?.binId){ doCloudPull(syncConfig); } else { setSyncModal(true); } }}
+              onContextMenu={e=>{e.preventDefault();setSyncModal(true);}}
+              title={syncConfig?.binId?"Synchroniser maintenant (clic long = paramètres)":"Configurer la synchronisation"}
+              style={{display:"flex",alignItems:"center",justifyContent:"center",width:38,height:38,borderRadius:10,border:"1px solid",cursor:"pointer",background:syncConfig?.binId?"#06b6d422":T.bgInput,borderColor:syncConfig?.binId?"#06b6d4":T.border,flexShrink:0,position:"relative"}}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
+                stroke={syncConfig?.binId?"#06b6d4":T.textSub} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                style={{animation:syncing?"spin 1s linear infinite":"none"}}>
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+              </svg>
+              {lastSync&&<span style={{position:"absolute",bottom:-14,left:"50%",transform:"translateX(-50%)",fontSize:8,color:"#06b6d4",whiteSpace:"nowrap",pointerEvents:"none"}}>
+                {lastSync.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+              </span>}
+            </button>
+            <button onClick={exportToExcel} title="Exporter en Excel"
+              style={{display:"flex",alignItems:"center",justifyContent:"center",width:38,height:38,borderRadius:10,border:"1px solid "+T.border,cursor:"pointer",background:T.bgInput,flexShrink:0}}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={T.textSub} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </button>
+            <div style={{position:"relative",flexShrink:0}}>
+              <button onClick={()=>setAddMenu(m=>!m)} title="Ajouter"
+                style={{display:"flex",alignItems:"center",justifyContent:"center",width:38,height:38,borderRadius:10,border:"1px solid "+T.border,cursor:"pointer",background:T.bgInput,flexShrink:0}}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.textSub} strokeWidth="2" strokeLinecap="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+              {addMenu&&(
+                <div style={{position:"absolute",top:"calc(100% + 6px)",right:0,background:T.bgSolid,border:"1px solid "+T.border,borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,.35)",overflow:"hidden",zIndex:500,minWidth:180}}
+                  onMouseLeave={()=>setAddMenu(false)}>
+                  <button onClick={()=>{setAddMenu(false);setModal("add");}}
+                    style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"12px 16px",background:"transparent",border:"none",cursor:"pointer",fontSize:13,color:T.text,textAlign:"left"}}
+                    onMouseEnter={e=>e.currentTarget.style.background=T.bgInput}
+                    onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textSub} strokeWidth="2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Nouvel investissement
+                  </button>
+                  <div style={{height:"1px",background:T.border,margin:"0 12px"}}/>
+                  <button onClick={()=>{setAddMenu(false);setAccountModal(true);}}
+                    style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"12px 16px",background:"transparent",border:"none",cursor:"pointer",fontSize:13,color:T.text,textAlign:"left"}}
+                    onMouseEnter={e=>e.currentTarget.style.background=T.bgInput}
+                    onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.textSub} strokeWidth="2" strokeLinecap="round"><rect x="2" y="3" width="20" height="5" rx="2"/><rect x="2" y="10" width="20" height="5" rx="2"/><rect x="2" y="17" width="11" height="5" rx="2"/></svg>
+                    Gérer les comptes
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <div style={{display:"flex",gap:6,marginTop:14}}>
+          {[["portfolio","Portfolio"],["history","Historique"]].map(([t,lbl])=>(
+            <button key={t} onClick={()=>setTab(t)} style={{
+              display:"flex",alignItems:"center",gap:6,padding:"8px 13px",borderRadius:10,
+              border:"1px solid",cursor:"pointer",fontSize:12,fontWeight:600,
+              borderColor: tab===t?"#06b6d4":T.border,
+              background:  tab===t?"#06b6d422":T.bgInput,
+              color:       tab===t?"#06b6d4":T.textSub,
+            }}>{lbl}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="main-scroll" style={{maxWidth:1100,margin:"0 auto",paddingTop:16}}>
+
+        {/* ── KPI ── */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:10,marginBottom:16}}>
+          {[
+            {label:"Investi",     value:M(totalInvested),                                          color:T.textDim},
+            {label:"Valeur",      value:M(totalCurrent),                                           color:"#38bdf8"},
+            {label:"Plus-value",  value:privacy?HIDDEN:(totalGain>=0?"+":"")+fmtEur(totalGain),    color:totalGain>=0?"#34d399":"#f87171"},
+            {label:"Performance", value:(totalPct>=0?"+":"")+totalPct.toFixed(1)+"%",              color:totalPct>=0?"#34d399":"#f87171"},
+            {label:"Positions",   value:investments.length,                                        color:"#a78bfa"},
+          ].map(c=>(
+            <div key={c.label} style={{...card,padding:"14px 16px"}}>
+              <div style={{fontSize:10,color:T.textDim,textTransform:"uppercase",letterSpacing:1,marginBottom:5}}>{c.label}</div>
+              <div style={{fontSize:18,fontWeight:700,color:c.color}}>{c.value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* ══════════ PORTFOLIO TAB ══════════ */}
+        {tab==="portfolio"&&(
+          <>
+            {donutData.length>0&&(()=>{
+              // Vue détaillée : chaque investissement individuel
+              const detailData = investments
+                .filter(i => i.currentPrice * i.quantity > 0)
+                .sort((a,b) => b.currentPrice*b.quantity - a.currentPrice*a.quantity)
+                .map((inv, idx) => ({
+                  label: inv.name,
+                  value: inv.currentPrice * inv.quantity,
+                  color: ASSET_PALETTE[idx % ASSET_PALETTE.length],
+                  ticker: inv.ticker,
+                  category: inv.category,
+                }));
+
+              const displayData = donutDetailed ? detailData : donutData;
+
+              return (
+                <div style={{...card,padding:"16px 18px",marginBottom:16}}>
+                  {/* Header avec toggle */}
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                    <span style={{fontSize:11,color:T.textMuted,textTransform:"uppercase",letterSpacing:1,fontWeight:600}}>
+                      Répartition {donutDetailed?"par actif":"par catégorie"}
+                    </span>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                      {[["cat","Catégories"],["detail","Détail"]].map(([k,lbl])=>{
+                        const active = donutDetailed===(k==="detail");
+                        return (
+                          <button key={k} onClick={()=>setDonutDetailed(k==="detail")} style={{
+                            padding:"6px 14px", borderRadius:20, border:"1px solid", fontSize:12, fontWeight:700,
+                            cursor:"pointer", whiteSpace:"nowrap", flexShrink:0,
+                            borderColor: active ? "#06b6d4" : T.border,
+                            background:  active ? "#06b6d422" : "transparent",
+                            color:       active ? "#06b6d4"   : T.textDim,
+                          }}>{lbl}</button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div style={{display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}}>
+                    {/* Donut */}
+                    <DonutChart data={displayData} T={T}/>
+
+                    {/* Légende */}
+                    <div style={{flex:1,minWidth:0}}>
+                      {donutDetailed ? (
+                        // Vue détaillée — liste scrollable
+                        <div style={{maxHeight:200,overflowY:"auto",display:"flex",flexDirection:"column",gap:4}}>
+                          {detailData.map(d=>(
+                            <div key={d.label} style={{display:"flex",alignItems:"center",gap:8,padding:"4px 0"}}>
+                              <div style={{width:8,height:8,borderRadius:2,background:d.color,flexShrink:0}}/>
+                              <span style={{fontSize:12,color:T.text,fontWeight:600,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{d.label}</span>
+                              {d.ticker&&<span style={{fontSize:10,color:T.textMuted,flexShrink:0}}>{d.ticker}</span>}
+                              <span style={{fontSize:12,fontWeight:700,color:T.text,flexShrink:0,marginLeft:4}}>{M(d.value)}</span>
+                              <span style={{fontSize:11,color:T.textMuted,flexShrink:0,minWidth:36,textAlign:"right"}}>{((d.value/totalCurrent)*100).toFixed(1)}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        // Vue par catégorie
+                        <div style={{display:"flex",flexWrap:"wrap",gap:"8px 20px"}}>
+                          {donutData.map(d=>(
+                            <div key={d.label} style={{display:"flex",alignItems:"center",gap:7,minWidth:150}}>
+                              <div style={{width:8,height:8,borderRadius:"50%",background:d.color,flexShrink:0}}/>
+                              <span style={{fontSize:13,color:T.textSub}}>{d.label}</span>
+                              <span style={{fontSize:13,fontWeight:700,color:T.text,marginLeft:"auto"}}>{M(d.value)}</span>
+                              <span style={{fontSize:11,color:T.textMuted}}>{((d.value/totalCurrent)*100).toFixed(1)}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+            <div style={{marginBottom:12}}>
+              <input placeholder="Rechercher..." value={search} onChange={e=>setSearch(e.target.value)}
+                style={{width:"100%",background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",color:T.text,fontSize:15,outline:"none",marginBottom:10}}/>
+              <div style={{display:"flex",gap:6,flexWrap:"nowrap",overflowX:"auto",paddingBottom:4}}>
+                {["Tous",...CATEGORIES].map(cat=>(
+                  <button key={cat} onClick={()=>setFilter(cat)} style={{padding:"6px 14px",borderRadius:20,border:"1px solid",fontSize:12,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",borderColor:filter===cat?(CAT_COLORS[cat]||"#06b6d4"):T.border,background:filter===cat?(CAT_COLORS[cat]||"#06b6d4")+"22":"transparent",color:filter===cat?(CAT_COLORS[cat]||"#06b6d4"):T.textDim}}>{cat}</button>
+                ))}
+                <select value={sort} onChange={e=>setSort(e.target.value)} style={{marginLeft:"auto",background:T.bgInput,border:"1px solid "+T.border,borderRadius:20,padding:"6px 12px",color:T.textSub,fontSize:12,flexShrink:0}}>
+                  <option value="value">Valeur</option>
+                  <option value="date">Date</option>
+                  <option value="perf">Performance</option>
+                </select>
+              </div>
+            </div>
+            {(()=>{
+              // Build display list: headers + cards grouped by account
+              const makeCard = (inv) => {
+                const invested=inv.buyPrice*inv.quantity, current=inv.currentPrice*inv.quantity, gain=current-invested, perf=pct(inv.currentPrice,inv.buyPrice), pos=gain>=0, gc=pos?"#34d399":"#f87171", ps=priceStatus[inv.id];
+                const acc = accounts.find(a=>a.id===inv.accountId);
+                return (
+                  <div key={inv.id} style={{...card,padding:"14px 16px"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
+                      <div style={{flex:1}}>
+                        <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                          <span style={{fontWeight:700,fontSize:15,color:T.text}}>{inv.name}</span>
+                          {inv.ticker?(
+                            <span style={{fontSize:10,padding:"2px 7px",borderRadius:6,fontWeight:700,background:ps==="ok"?"#34d39922":ps==="error"?"#f8717122":ps==="loading"?"#06b6d422":T.bgInput,color:ps==="ok"?"#34d399":ps==="error"?"#f87171":ps==="loading"?"#06b6d4":T.textMuted,animation:ps==="loading"?"pulse 1s ease-in-out infinite":"none"}}>{ps==="loading"?"...":inv.ticker}</span>
+                          ):(
+                            <span style={{fontSize:10,padding:"2px 7px",borderRadius:6,background:T.bgInput,color:T.textFaint}}>no ticker</span>
+                          )}
+                        </div>
+                        <div style={{display:"flex",gap:8,alignItems:"center",marginTop:5,flexWrap:"wrap"}}>
+                          <span style={{fontSize:11,padding:"2px 8px",borderRadius:20,fontWeight:700,background:(CAT_COLORS[inv.category]||"#94a3b8")+"22",color:CAT_COLORS[inv.category]||"#94a3b8"}}>{inv.category}</span>
+                          {acc&&accounts.length>0&&<span style={{fontSize:11,padding:"2px 8px",borderRadius:20,fontWeight:700,background:acc.color+"22",color:acc.color}}>{acc.name}</span>}
+                          <span style={{fontSize:11,color:T.textMuted}}>{fmtDate(inv.date)}</span>
+                        </div>
+                      </div>
+                      <div style={{textAlign:"right",flexShrink:0,marginLeft:8}}>
+                        <div style={{fontSize:17,fontWeight:700,color:T.text}}>{M(current)}</div>
+                        <div style={{fontSize:13,fontWeight:700,color:gc}}>{pos?"+":""}{perf.toFixed(1)}%</div>
+                      </div>
+                    </div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
+                      {[{label:"Investi",value:M(invested)},{label:"Prix actuel",value:M(inv.currentPrice)},{label:"P&L",value:privacy?HIDDEN:(pos?"+":"")+fmtEur(gain),color:gc}].map(({label,value,color})=>(
+                        <div key={label} style={{background:T.bgDeep,borderRadius:8,padding:"8px 10px"}}>
+                          <div style={{fontSize:9,color:T.textMuted,textTransform:"uppercase",letterSpacing:1,marginBottom:3}}>{label}</div>
+                          <div style={{fontSize:13,fontWeight:600,color:color||T.textSub}}>{value}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      <Sparkline values={HISTORY[inv.name]}/>
+                      <div style={{display:"flex",gap:6}}>
+                        <button onClick={()=>setModal(inv)} style={{background:T.bgInput,border:"none",borderRadius:8,padding:"6px 12px",color:T.textSub,cursor:"pointer",fontSize:13}}>Modifier</button>
+                        <button onClick={()=>{if(window.confirm("Supprimer "+inv.name+" ?"))remove(inv.id);}} style={{background:T.bgInput,border:"none",borderRadius:8,padding:"6px 12px",color:"#f87171",cursor:"pointer",fontSize:13}}>Sup.</button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              };
+
+              if (accounts.length===0) {
+                return <div style={{display:"flex",flexDirection:"column",gap:8}}>{filtered.map(makeCard)}</div>;
+              }
+
+              const groups = [
+                ...accounts.map(acc=>({id:acc.id,name:acc.name,color:acc.color,invs:filtered.filter(i=>i.accountId===acc.id)})),
+                {id:null,name:"Non classé",color:T.textMuted,invs:filtered.filter(i=>!i.accountId||!accounts.find(a=>a.id===i.accountId))}
+              ].filter(g=>g.invs.length>0);
+
+              return (
+                <div style={{display:"flex",flexDirection:"column",gap:16}}>
+                  {groups.map(group=>{
+                    const gTotal    = group.invs.reduce((s,i)=>s+i.currentPrice*i.quantity,0);
+                    const gInvested = group.invs.reduce((s,i)=>s+i.buyPrice*i.quantity,0);
+                    const gGain     = gTotal-gInvested;
+                    const gPerf     = pct(gTotal,gInvested);
+                    const gPos      = gGain>=0;
+                    return (
+                      <div key={String(group.id)}>
+                        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10,padding:"10px 14px",background:T.bgDeep,borderRadius:10,border:"1px solid "+T.border}}>
+                          <div style={{width:10,height:10,borderRadius:"50%",background:group.color,flexShrink:0}}/>
+                          <span style={{fontWeight:700,fontSize:14,color:T.text,flex:1}}>{group.name}</span>
+                          <span style={{fontSize:11,color:T.textMuted}}>{group.invs.length} pos.</span>
+                          <span style={{fontSize:14,fontWeight:700,color:T.text,marginLeft:8}}>{M(gTotal)}</span>
+                          <span style={{fontSize:12,fontWeight:700,color:gPos?"#34d399":"#f87171"}}>{gPos?"+":""}{gPerf.toFixed(1)}%</span>
+                        </div>
+                        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                          {group.invs.map(makeCard)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+          </>
+        )}
+
+        {/* ══════════ HISTORY TAB ══════════ */}
+        {tab==="history"&&(
+          <div>
+            {/* ── Sélecteur d'intervalle ── */}
+            <div style={{display:"flex",gap:4,marginBottom:16,overflowX:"auto",paddingBottom:2}}>
+              {INTERVALS.map(iv => (
+                <button key={iv.key} onClick={()=>setInterval(iv.key)} style={{
+                  padding:"6px 14px", borderRadius:20, border:"1px solid", fontSize:12, fontWeight:700,
+                  cursor:"pointer", whiteSpace:"nowrap", flexShrink:0,
+                  borderColor: interval===iv.key ? "#06b6d4" : T.border,
+                  background:  interval===iv.key ? "#06b6d422" : "transparent",
+                  color:       interval===iv.key ? "#06b6d4" : T.textDim,
+                }}>{iv.label}</button>
+              ))}
+            </div>
+
+            {/* ── Sélecteur d'indices ── */}
+            <div style={{...card,padding:"16px 20px",marginBottom:16}}>
+              <div style={{fontSize:12,color:T.textMuted,marginBottom:12,fontWeight:600,textTransform:"uppercase",letterSpacing:1}}>Indices a afficher dans les comparaisons</div>
+              <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+                {Object.entries(INDICES).map(([key,idx])=>{
+                  const active=activeIdx.includes(key);
+                  const perfVal=pct(idx.data[idx.data.length-1],idx.data[0]);
+                  return (
+                    <button key={key} onClick={()=>toggleIdx(key)} style={{
+                      display:"flex",alignItems:"center",gap:8,padding:"10px 16px",borderRadius:12,border:"2px solid",cursor:"pointer",
+                      borderColor:active?idx.color:T.border,
+                      background:active?idx.color+"22":T.bgDeep,
+                      transition:"all .2s",
+                    }}>
+                      <div style={{width:10,height:10,borderRadius:"50%",background:active?idx.color:T.textFaint,flexShrink:0}}/>
+                      <div style={{textAlign:"left"}}>
+                        <div style={{fontSize:13,fontWeight:700,color:active?idx.color:T.textDim}}>{idx.label}</div>
+                        <div style={{fontSize:11,color:active?"#34d399":T.textFaint,fontWeight:600}}>+{perfVal.toFixed(0)}% (2016-2024)</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ── Stats comparatifs ── */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:10,marginBottom:16}}>
+              {Object.entries(INDICES).filter(([k])=>activeIdx.includes(k)).map(([key,idx])=>{
+                const { vals:sliced } = sliceByInterval(idx.data, interval);
+                const perfSlice = pct(sliced[sliced.length-1], sliced[0]);
+                const label = INTERVALS.find(i=>i.key===interval)?.label || "Max";
+                return (
+                  <div key={key} style={{background:T.bgDeep,border:"1px solid "+T.border,borderRadius:10,padding:"12px 14px"}}>
+                    <div style={{fontSize:10,color:T.textMuted,textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>{idx.label} ({label})</div>
+                    <div style={{fontSize:18,fontWeight:700,color:perfSlice>=0?"#34d399":"#f87171"}}>{perfSlice>=0?"+":""}{perfSlice.toFixed(1)}%</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* ── Historique par compte ── */}
+            {(()=>{
+              const N = HIST_DATES.length;
+
+              // Série réelle ou synthétique alignée sur HIST_DATES (longueur N)
+              const getSeries = (inv) => {
+                if (HISTORY[inv.name]) {
+                  // Padder à gauche si la série est plus courte que N
+                  const s = HISTORY[inv.name];
+                  const pad = N - s.length;
+                  return pad > 0 ? [...Array(pad).fill(0), ...s] : s;
+                }
+                const buyDate = new Date(inv.date);
+                let startIdx = N - 1;
+                for (let i = 0; i < N; i++) {
+                  if (HIST_DATES[i] >= buyDate) { startIdx = i; break; }
+                }
+                // Garantir au moins 2 points pour que le graphique s'affiche
+                startIdx = Math.min(startIdx, N - 2);
+                const buyVal = inv.buyPrice * inv.quantity;
+                const curVal = inv.currentPrice * inv.quantity;
+                const span = N - startIdx;
+                return Array.from({length: N}, (_, i) => {
+                  if (i < startIdx) return 0;
+                  const t = span <= 1 ? 1 : (i - startIdx) / (span - 1);
+                  return Math.round((buyVal + (curVal - buyVal) * t) * 100) / 100;
+                });
+              };
+
+              // Retourne un tableau de longueur N (aligné HIST_DATES) + index de début réel
+              const buildHistory = (invs) => {
+                if (!invs.length) return null;
+                const series = invs.map(getSeries);
+                const summed = Array.from({length: N}, (_, i) => series.reduce((s, arr) => s + (arr[i] || 0), 0));
+                const firstNonZero = summed.findIndex(v => v > 0);
+                if (firstNonZero < 0) return null;
+                return { vals: summed, histStart: firstNonZero };
+              };
+
+              const totalHistObj = buildHistory(investments);
+              const accountGroups = accounts.map(acc => {
+                const invs = investments.filter(i => i.accountId === acc.id);
+                const h = buildHistory(invs);
+                return h ? { acc, ...h, invs } : null;
+              }).filter(Boolean);
+
+              if (!totalHistObj && accountGroups.length === 0) return null;
+
+              const renderAccountCard = ({acc, vals, histStart, invs, isTotal}) => {
+                // ── Données hebdomadaires réelles (cours historiques ou interpolation) ──
+                const allInvs = isTotal ? investments : (invs||[]);
+                const weeklyPts = buildWeeklyAccountValsFromHistory(allInvs, portfolioHistData, interval);
+
+                // Valeur finale = cours actuels × quantités
+                const wFinal = allInvs.reduce((s,inv) =>
+                  s + ((inv.currentPrice ?? inv.buyPrice ?? 0) * (inv.quantity||0)), 0);
+                // Valeur de début de période = premier point hebdomadaire
+                const wStart = weeklyPts.length >= 2 ? weeklyPts[0].val : wFinal;
+                const gain = wFinal - wStart;
+                const perf = pct(wFinal, wStart);
+                const pos  = gain >= 0;
+                // Garder compatibilité avec l'ancien système pour les vérifications de base
+                const { vals: sliced, startIdx } = sliceByInterval(vals, interval);
+                const firstReal = sliced.findIndex(v => v > 0);
+                if (firstReal < 0 && weeklyPts.length < 1) return null;
+                const slicedReal = sliced.slice(Math.max(firstReal,0));
+                const nR = slicedReal.length;
+                // Labels date : depuis histStart ou depuis startIdx, jusqu'à la fin
+                const realStartIdx = Math.max(histStart, startIdx + firstReal);
+                const startLabel = (() => {
+                  const iv2 = INTERVALS.find(i=>i.key===interval);
+                  if (!iv2 || iv2.key==='MAX') {
+                    const allInvs = isTotal ? investments : (invs||[]);
+                    const minDate = allInvs.filter(i=>i.date).reduce((m,i)=>{const d=new Date(i.date);return d<m?d:m;},new Date());
+                    return minDate.toLocaleDateString('fr-FR',{month:'short',year:'numeric'});
+                  }
+                  if (iv2.ytd) return `jan. ${new Date().getFullYear()}`;
+                  const d=new Date(); d.setMonth(d.getMonth()-iv2.months);
+                  return d.toLocaleDateString('fr-FR',{month:'short',year:'numeric'});
+                })();
+                const endLabel = new Date().toLocaleDateString('fr-FR',{month:'short',year:'numeric'});
+                const color  = isTotal ? "#06b6d4" : acc.color;
+                const cardId = isTotal ? "__total__" : "acc"+acc.id;
+                const name   = isTotal ? "Total portefeuille" : acc.name;
+                const borderStyle = isTotal ? {borderColor:"rgba(255,255,255,0.22)"} : {borderColor: acc.color+"44"};
+                return (
+                  <div key={cardId} style={{...card,...borderStyle,padding:"16px 18px",marginBottom:12}}>
+                    <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginBottom:12}}>
+                      <div>
+                        <div style={{display:"flex",alignItems:"center",gap:8}}>
+                          <div style={{width:10,height:10,borderRadius:"50%",background:color,flexShrink:0}}/>
+                          <span style={{fontWeight:700,fontSize:15,color:T.text}}>{name}</span>
+                          {invs&&<span style={{fontSize:11,color:T.textMuted}}>{invs.length} pos.</span>}
+                        </div>
+                        <div style={{fontSize:11,color:T.textMuted,marginTop:3}}>{startLabel} → {endLabel}</div>
+                      </div>
+                      <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+                        <div style={{textAlign:"right"}}>
+                          <div style={{fontSize:10,color:T.textMuted,textTransform:"uppercase",letterSpacing:1}}>Valeur finale</div>
+                          <div style={{fontSize:15,fontWeight:700,color:T.text}}>{M(wFinal)}</div>
+                          <div style={{fontSize:12,fontWeight:700,color:pos?"#34d399":"#f87171"}}>{privacy?HIDDEN:(gain>=0?"+":"")+fmtEur(gain)} ({perf.toFixed(1)}%)</div>
+                        </div>
+                        {Object.entries(INDICES).filter(([k])=>activeIdx.includes(k)).map(([key,idx])=>{
+                          const liveHist = indexHistData?.[key];
+                          let ip;
+                          if (liveHist?.length >= 2) {
+                            ip = pct(liveHist[liveHist.length-1].val, liveHist[0].val);
+                          } else {
+                            const {vals:si}=sliceByInterval(idx.data,interval);
+                            ip=pct(si[si.length-1],si[0]);
+                          }
+                          return (
+                            <div key={key} style={{textAlign:"right"}}>
+                              <div style={{fontSize:10,color:T.textMuted,textTransform:"uppercase",letterSpacing:1}}>{idx.label}</div>
+                              <div style={{fontSize:14,fontWeight:700,color:idx.color}}>{ip>=0?"+":""}{ip.toFixed(1)}%</div>
+                              <div style={{fontSize:10,fontWeight:600,color:perf>ip?"#34d399":"#f87171"}}>{perf>ip?"Sur":"Sous"}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <ComparisonChartWeekly
+                          id={cardId}
+                          accountPts={buildWeeklyAccountValsFromHistory(isTotal ? investments : (invs||[]), portfolioHistData, interval)}
+                          indexHistData={indexHistData}
+                          activeIndices={activeIdx}
+                          indexHistLoading={indexHistLoading}
+                          portfolioHistLoading={portfolioHistLoading}
+                          T={T}
+                        />
+                  </div>
+                );
+              };
+
+              return (
+                <>
+                  <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:16,color:T.text,marginBottom:4,marginTop:8}}>Évolution par compte</h2>
+                  <p style={{fontSize:12,color:T.textMuted,marginBottom:14}}>Comparaison normalisée base 100 — intervalle : {INTERVALS.find(i=>i.key===interval)?.label}</p>
+                  {totalHistObj && renderAccountCard({...totalHistObj, acc:null, invs:null, isTotal:true})}
+                  {accountGroups.map(g => renderAccountCard({...g, isTotal:false}))}
+                </>
+              );
+            })()}
+
+          </div>
+        )}
+      </div>
+
+      {modal&&<Modal initial={modal==="add"?null:modal} onClose={()=>setModal(null)} onSave={addOrUpdate} accounts={accounts} T={T}/>}
+      {accountModal&&<AccountManagerModal accounts={accounts} onClose={()=>setAccountModal(false)} onSave={persistAccounts} T={T}/>}
+      {syncModal&&(
+        <SyncSettingsModal
+          syncConfig={syncConfig}
+          onClose={()=>setSyncModal(false)}
+          onSave={(cfg)=>{
+            setSyncConfig(cfg);
+            try { localStorage.setItem(SYNC_KEY, JSON.stringify(cfg)); } catch(e){}
+            // Pull immédiat après config → découverte auto du binId + chargement des données
+            if (cfg?.apiKey) setTimeout(()=>doCloudPull(cfg), 300);
+          }}
+          onSyncNow={()=>{ setSyncModal(false); doCloudPull(syncConfigRef.current||syncConfig); }}
+          syncing={syncing}
+          lastSync={lastSync}
+          T={T}
+        />
+      )}
+      {histPointModal&&(
+        <HistoryPointModal
+          assetName={histPointModal}
+          existingPoints={histUserData[histPointModal]?.extra||[]}
+          onClose={()=>setHistPointModal(null)}
+          onSave={(point, deleteIdx)=>{
+            const current = histUserData[histPointModal]||{};
+            const extra   = [...(current.extra||[])];
+            if (point === null && deleteIdx !== undefined) {
+              extra.splice(deleteIdx, 1);
+            } else if (point) {
+              extra.push(point);
+              extra.sort((a,b)=>new Date(a.d)-new Date(b.d));
+            }
+            persistHist({...histUserData,[histPointModal]:{...current,extra}});
+          }}
+          T={T}
+        />
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
